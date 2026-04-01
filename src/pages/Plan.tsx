@@ -13,8 +13,8 @@ function PaceTag({ pace }: { pace: string }) {
   return (
     <span
       style={{
-        background: 'rgba(255,255,255,0.06)',
-        border: '1px solid rgba(255,255,255,0.12)',
+        background: 'rgba(var(--fg-rgb),0.06)',
+        border: '1px solid rgba(var(--fg-rgb),0.12)',
         borderRadius: 4,
         padding: '2px 7px',
         fontSize: 11,
@@ -35,8 +35,8 @@ function DateLabel({ children }: { children: React.ReactNode }) {
         fontSize: 10,
         fontWeight: 600,
         color: 'var(--text-muted)',
-        background: 'rgba(255,255,255,0.05)',
-        border: '1px solid rgba(255,255,255,0.08)',
+        background: 'rgba(var(--fg-rgb),0.05)',
+        border: '1px solid rgba(var(--fg-rgb),0.08)',
         borderRadius: 4,
         padding: '1px 6px',
         whiteSpace: 'nowrap',
@@ -203,7 +203,7 @@ export default function Plan({ progress, onToggle, onSaveNote }: PlanProps) {
                       <button
                         onClick={() => setExpandedGym(isExpanded ? null : expandKey)}
                         style={{
-                          background: 'rgba(255,255,255,0.06)',
+                          background: 'rgba(var(--fg-rgb),0.06)',
                           border: '1px solid var(--border)',
                           borderRadius: 6,
                           color: 'var(--text-muted)',
@@ -224,7 +224,7 @@ export default function Plan({ progress, onToggle, onSaveNote }: PlanProps) {
                         style={{
                           borderTop: '1px solid var(--border)',
                           padding: '14px 14px 16px',
-                          background: 'rgba(0,0,0,0.2)',
+                          background: 'rgba(var(--fg-rgb),0.05)',
                         }}
                       >
                         <GymTable splitName={g.split} />
@@ -265,7 +265,7 @@ export default function Plan({ progress, onToggle, onSaveNote }: PlanProps) {
             onClick={handleSaveNote}
             style={{
               marginTop: 8,
-              background: savedNote ? 'rgba(74,222,128,0.18)' : 'rgba(255,255,255,0.07)',
+              background: savedNote ? 'rgba(74,222,128,0.18)' : 'rgba(var(--fg-rgb),0.07)',
               border: `1px solid ${savedNote ? 'var(--green)' : 'var(--border)'}`,
               borderRadius: 8,
               color: savedNote ? 'var(--green)' : 'var(--text-primary)',

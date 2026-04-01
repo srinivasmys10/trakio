@@ -11,7 +11,7 @@ export default function CheckBox({ checked, onChange }: CheckBoxProps) {
       style={{
         width: 22,
         height: 22,
-        border: `2px solid ${checked ? 'var(--green)' : 'rgba(255,255,255,0.25)'}`,
+        border: `2px solid ${checked ? 'var(--green)' : 'rgba(var(--fg-rgb),0.25)'}`,
         borderRadius: 6,
         background: checked ? 'rgba(74,222,128,0.2)' : 'transparent',
         display: 'flex',

@@ -108,7 +108,7 @@ export default function Gym() {
                 </div>
 
                 {isExpanded && (
-                  <div style={{ borderTop: '1px solid var(--border)', padding: '14px 16px 18px', background: 'rgba(0,0,0,0.2)' }}>
+                  <div style={{ borderTop: '1px solid var(--border)', padding: '14px 16px 18px', background: 'rgba(var(--fg-rgb),0.05)' }}>
                     <GymTable splitName={name} />
                   </div>
                 )}

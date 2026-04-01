@@ -7,7 +7,7 @@ interface StatusConfig {
 }
 
 const STATUS_CONFIG: Record<SyncStatus, StatusConfig> = {
-  idle: { color: 'rgba(255,255,255,0.2)', label: null, glow: false },
+  idle: { color: 'rgba(var(--fg-rgb),0.2)', label: null, glow: false },
   saving: { color: '#f59e0b', label: 'Syncing…', glow: true },
   saved: { color: '#4ade80', label: 'Saved ✓', glow: false },
   error: { color: '#f87171', label: '⚠ Sync error', glow: false },
@@ -30,7 +30,7 @@ export default function SyncDot({ status }: SyncDotProps) {
           flexShrink: 0,
         }}
       />
-      <span style={{ fontSize: 10, color: 'rgba(255,255,255,0.35)' }}>
+      <span style={{ fontSize: 10, color: 'var(--text-muted)' }}>
         {s.label ?? '5:00 /km goal · 17 weeks · Week 1 starts 6 Apr 2026'}
       </span>
     </div>
