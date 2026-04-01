@@ -40,6 +40,31 @@ export default function App() {
   const [progress, setProgress] = useState<Progress>({})
   const [loaded, setLoaded] = useState<boolean>(false)
   const [syncStatus, setSyncStatus] = useState<SyncStatus>('idle')
+  const [theme, setTheme] = useState<'dark' | 'light'>('dark')
+
+  // Theme support
+  useEffect(() => {
+    const saved = localStorage.getItem('theme') as 'dark' | 'light' | null
+    if (saved) {
+      setTheme(saved)
+      document.documentElement.setAttribute('data-theme', saved)
+    } else {
+      const prefersLight = window.matchMedia('(prefers-color-scheme: light)').matches
+      if (prefersLight) {
+        setTheme('light')
+        document.documentElement.setAttribute('data-theme', 'light')
+      }
+    }
+  }, [])
+
+  const toggleTheme = useCallback(() => {
+    setTheme(t => {
+      const next = t === 'dark' ? 'light' : 'dark'
+      document.documentElement.setAttribute('data-theme', next)
+      localStorage.setItem('theme', next)
+      return next
+    })
+  }, [])
 
   // ── Load from Supabase on mount ─────────────────────────────────────────────
   useEffect(() => {
@@ -112,7 +137,7 @@ export default function App() {
         <div style={{ fontSize: 40 }}>🏃</div>
         <div style={{ fontSize: 15, fontWeight: 600 }}>Loading training plan…</div>
         <div style={{ fontSize: 12, color: 'var(--text-muted)' }}>Opening the app</div>
-        <div style={{ width: 180, height: 3, background: 'rgba(255,255,255,0.07)', borderRadius: 2, overflow: 'hidden' }}>
+        <div style={{ width: 180, height: 3, background: 'rgba(var(--fg-rgb),0.07)', borderRadius: 2, overflow: 'hidden' }}>
           <div
             style={{
               height: '100%', width: '40%',
@@ -153,12 +178,25 @@ export default function App() {
               </div>
               <SyncDot status={syncStatus} />
             </div>
-            <div style={{ textAlign: 'right' }}>
-              <div style={{ fontSize: 24, fontWeight: 800, color: 'var(--green)', lineHeight: 1 }}>
-                {pct}%
-              </div>
-              <div style={{ fontSize: 10, color: 'var(--text-muted)', marginTop: 2 }}>
-                {completed}/{total} sessions
+            <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+              <button
+                onClick={toggleTheme}
+                style={{
+                  background: 'var(--surface)', border: '1px solid var(--border)',
+                  color: 'var(--text-primary)', borderRadius: '50%',
+                  width: 32, height: 32, display: 'flex', alignItems: 'center',
+                  justifyContent: 'center', cursor: 'pointer', fontSize: 14
+                }}
+              >
+                {theme === 'dark' ? '☀️' : '🌙'}
+              </button>
+              <div style={{ textAlign: 'right' }}>
+                <div style={{ fontSize: 24, fontWeight: 800, color: 'var(--green)', lineHeight: 1 }}>
+                  {pct}%
+                </div>
+                <div style={{ fontSize: 10, color: 'var(--text-muted)', marginTop: 2 }}>
+                  {completed}/{total} sessions
+                </div>
               </div>
             </div>
           </div>
@@ -167,7 +205,7 @@ export default function App() {
           <div
             style={{
               marginTop: 10, height: 4,
-              background: 'rgba(255,255,255,0.06)',
+              background: 'rgba(var(--fg-rgb),0.06)',
               borderRadius: 2, overflow: 'hidden',
             }}
           >
@@ -203,7 +241,7 @@ export default function App() {
       <nav
         style={{
           position: 'fixed', bottom: 0, left: 0, right: 0,
-          background: 'rgba(10,10,15,0.97)',
+          background: 'var(--bg-header)',
           borderTop: '1px solid var(--border)',
           display: 'flex', justifyContent: 'space-around',
           padding: 'calc(8px) 0 max(12px, env(safe-area-inset-bottom))',
@@ -220,7 +258,7 @@ export default function App() {
               style={{
                 display: 'flex', flexDirection: 'column', alignItems: 'center',
                 gap: 3, padding: '4px 10px', borderRadius: 10,
-                background: active ? 'rgba(255,255,255,0.07)' : 'transparent',
+                background: active ? 'rgba(var(--fg-rgb),0.07)' : 'transparent',
                 color: active ? 'var(--green)' : 'var(--text-muted)',
                 border: 'none',
                 transition: 'all 0.2s',

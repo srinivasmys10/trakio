@@ -22,6 +22,31 @@
   --purple: #a78bfa;
   --yellow: #facc15;
   --font-mono: 'DM Mono', monospace;
+  
+  --fg-rgb: 255, 255, 255;
+  --fg-inv-rgb: 0, 0, 0;
+  color-scheme: dark;
+}
+
+[data-theme='light'] {
+  --bg: #f8f9fa;
+  --bg-header: #ffffff;
+  --surface: rgba(0, 0, 0, 0.04);
+  --surface-hover: rgba(0, 0, 0, 0.07);
+  --border: rgba(0, 0, 0, 0.08);
+  --text-primary: #111827;
+  --text-secondary: rgba(0, 0, 0, 0.55);
+  --text-muted: rgba(0, 0, 0, 0.45);
+  --green: #16a34a;
+  --blue: #2563eb;
+  --amber: #d97706;
+  --red: #ef4444;
+  --purple: #7c3aed;
+  --yellow: #ca8a04;
+  
+  --fg-rgb: 0, 0, 0;
+  --fg-inv-rgb: 255, 255, 255;
+  color-scheme: light;
 }
 
 html {
@@ -52,7 +77,7 @@ body {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.12);
+  background: rgba(var(--fg-rgb), 0.12);
   border-radius: 2px;
 }
 
@@ -84,7 +109,7 @@ textarea {
 }
 
 textarea:focus {
-  border-color: rgba(255, 255, 255, 0.22);
+  border-color: rgba(var(--fg-rgb), 0.22);
 }
 
 /* Buttons */
