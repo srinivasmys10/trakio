@@ -7,10 +7,10 @@ interface StatusConfig {
 }
 
 const STATUS_CONFIG: Record<SyncStatus, StatusConfig> = {
-  idle: { color: 'rgba(var(--fg-rgb),0.2)', label: null, glow: false },
-  saving: { color: '#f59e0b', label: 'Syncing…', glow: true },
-  saved: { color: '#4ade80', label: 'Saved ✓', glow: false },
-  error: { color: '#f87171', label: '⚠ Sync error', glow: false },
+  idle:   { color: 'var(--text-faint)', label: null,                   glow: false },
+  saving: { color: '#f59e0b',               label: 'Syncing to Supabase…', glow: true  },
+  saved:  { color: '#4ade80',               label: 'Saved to Supabase ✓',  glow: false },
+  error:  { color: '#f87171',               label: '⚠ Sync error',         glow: false },
 }
 
 export default function SyncDot({ status }: SyncDotProps) {
