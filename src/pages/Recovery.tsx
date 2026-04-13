@@ -44,7 +44,7 @@ export default function Recovery() {
             key={i}
             style={{
               padding: '8px 0',
-              borderBottom: i < WARMUP_STEPS.length - 1 ? '1px solid rgba(var(--fg-rgb),0.05)' : 'none',
+              borderBottom: i < WARMUP_STEPS.length - 1 ? '1px solid var(--border-subtle)' : 'none',
               display: 'flex',
               gap: 10,
               alignItems: 'flex-start',
@@ -70,7 +70,7 @@ export default function Recovery() {
             key={i}
             style={{
               padding: '8px 0',
-              borderBottom: i < COOLDOWN_STEPS.length - 1 ? '1px solid rgba(var(--fg-rgb),0.05)' : 'none',
+              borderBottom: i < COOLDOWN_STEPS.length - 1 ? '1px solid var(--border-subtle)' : 'none',
               display: 'flex',
               gap: 10,
               alignItems: 'flex-start',
@@ -96,7 +96,7 @@ export default function Recovery() {
             key={i}
             style={{
               padding: '8px 0',
-              borderBottom: i < REST_TIPS.length - 1 ? '1px solid rgba(var(--fg-rgb),0.05)' : 'none',
+              borderBottom: i < REST_TIPS.length - 1 ? '1px solid var(--border-subtle)' : 'none',
               display: 'flex', gap: 10, alignItems: 'flex-start',
             }}
           >

@@ -10,9 +10,6 @@ if (!supabaseUrl || !supabaseKey) {
 
 export const supabase = createClient(supabaseUrl, supabaseKey)
 
-/** Single-user personal tracker — no auth needed */
-export const USER_ID = 'default_user'
-
 // ─── Database row shape ───────────────────────────────────────────────────────
 
 interface ProgressRow {
@@ -21,30 +18,43 @@ interface ProgressRow {
   updated_at: string
 }
 
-/**
- * Load the progress JSON blob for this user.
- * Returns an empty object if no row exists yet.
- */
-export async function loadProgress(): Promise<Progress> {
-  const { data, error } = await supabase
-    .from<string, { Row: ProgressRow }>('training_progress')
-    .select('progress')
-    .eq('user_id', USER_ID)
-    .maybeSingle()
-
-  if (error) throw error
-  return (data as ProgressRow | null)?.progress ?? {}
+/** Get the currently authenticated user's ID (throws if not signed in) */
+async function getAuthUserId(): Promise<string> {
+  const { data: { user }, error } = await supabase.auth.getUser()
+  if (error || !user) throw new Error('Not authenticated')
+  return user.id
 }
 
 /**
- * Upsert the full progress object back to Supabase.
+ * Load the progress JSON blob for the current authenticated user.
+ * Returns {} if no row exists yet (first time user).
+ */
+export async function loadProgress(): Promise<Progress> {
+  const userId = await getAuthUserId()
+
+  const { data, error } = await supabase
+    .from('training_progress')
+    .select('progress')
+    .eq('user_id', userId)
+    .maybeSingle()
+
+  if (error) throw error
+  return (data as Pick<ProgressRow, 'progress'> | null)?.progress ?? {}
+}
+
+/**
+ * Upsert the full progress object for the current authenticated user.
+ * Supabase Auth handles all password hashing (bcrypt) — raw passwords
+ * are never stored in this table or anywhere in your database.
  */
 export async function saveProgress(progressData: Progress): Promise<void> {
+  const userId = await getAuthUserId()
+
   const { error } = await supabase
     .from('training_progress')
     .upsert(
       {
-        user_id:    USER_ID,
+        user_id:    userId,
         progress:   progressData,
         updated_at: new Date().toISOString(),
       } satisfies ProgressRow,

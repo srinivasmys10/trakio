@@ -19,7 +19,7 @@ export default function WeekCard({ weekData, progress, isActive, onClick }: Week
       tabIndex={0}
       onKeyDown={(e) => e.key === 'Enter' && onClick(weekData.week)}
       style={{
-        background: isActive ? pc.bg : 'rgba(var(--fg-rgb),0.03)',
+        background: isActive ? pc.bg : 'var(--bg)',
         border: `1.5px solid ${isActive ? pc.border : 'var(--border)'}`,
         borderRadius: 12,
         padding: '13px 14px',
@@ -81,7 +81,7 @@ export default function WeekCard({ weekData, progress, isActive, onClick }: Week
         <span style={{ fontSize: 10, color: 'var(--text-muted)', whiteSpace: 'nowrap' }}>
           🏃 {completedRuns}/{weekData.runs.length} · 🏋️ {completedGym}/{weekData.gym.length}
         </span>
-        <div style={{ flex: 1, height: 3, background: 'rgba(var(--fg-rgb),0.07)', borderRadius: 2 }}>
+        <div style={{ flex: 1, height: 3, background: 'var(--surface-hover)', borderRadius: 2 }}>
           <div style={{
             height: '100%',
             borderRadius: 2,
