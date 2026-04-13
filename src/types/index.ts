@@ -89,7 +89,7 @@ export type Progress = Record<string, boolean | string>
 
 export type SyncStatus = 'idle' | 'saving' | 'saved' | 'error'
 
-export type NavId = 'dashboard' | 'plan' | 'gym' | 'recovery' | 'nutrition' | 'food'
+export type NavId = 'dashboard' | 'plan' | 'gym' | 'recovery' | 'nutrition' | 'food' | 'workout'
 
 export interface NavItem {
   id: NavId
@@ -263,3 +263,53 @@ export interface MealPlan {
 }
 
 export type NewMealPlan = Omit<MealPlan, 'id' | 'user_id' | 'created_at' | 'ingredients'>
+
+// ─── Workout / Gym Planner types ──────────────────────────────────────────────
+
+export type ExerciseType =
+  | 'upper_body' | 'lower_body' | 'core' | 'cardio' | 'full_body' | 'flexibility' | 'other'
+
+export const EXERCISE_TYPES: ExerciseType[] = [
+  'upper_body','lower_body','core','cardio','full_body','flexibility','other',
+]
+
+export const EXERCISE_TYPE_LABELS: Record<ExerciseType, { label: string; icon: string; color: string; border: string; bg: string }> = {
+  upper_body:  { label: 'Upper Body',  icon: '💪', color: 'var(--blue)',   border: 'rgba(96,165,250,0.35)',  bg: 'rgba(96,165,250,0.08)'  },
+  lower_body:  { label: 'Lower Body',  icon: '🦵', color: 'var(--purple)', border: 'rgba(167,139,250,0.35)', bg: 'rgba(167,139,250,0.08)' },
+  core:        { label: 'Core',        icon: '🎯', color: 'var(--amber)',  border: 'rgba(245,158,11,0.35)',  bg: 'rgba(245,158,11,0.08)'  },
+  cardio:      { label: 'Cardio',      icon: '🏃', color: 'var(--red)',    border: 'rgba(248,113,113,0.35)', bg: 'rgba(248,113,113,0.08)' },
+  full_body:   { label: 'Full Body',   icon: '⚡', color: 'var(--yellow)', border: 'rgba(250,204,21,0.35)',  bg: 'rgba(250,204,21,0.08)'  },
+  flexibility: { label: 'Flexibility', icon: '🧘', color: 'var(--green)',  border: 'rgba(74,222,128,0.35)',  bg: 'rgba(74,222,128,0.08)'  },
+  other:       { label: 'Other',       icon: '🏅', color: 'var(--text-muted)', border: 'var(--border)',     bg: 'var(--surface)'         },
+}
+
+export interface ExerciseLibraryItem {
+  id:            number
+  name:          string
+  description:   string
+  exercise_type: ExerciseType
+  impact_areas:  string[]      // e.g. ['chest','triceps']
+  default_sets:  number
+  default_reps:  string        // e.g. "8-12" or "30 sec"
+  audio_url:     string | null // Supabase Storage public URL
+  sort_order:    number
+  created_at:    string
+}
+
+export type NewExerciseLibraryItem = Omit<ExerciseLibraryItem, 'id' | 'created_at'>
+
+export interface WorkoutSlot {
+  id:           number
+  user_id:      string
+  week_start:   string
+  weekday:      Weekday
+  exercise_id:  number
+  custom_sets:  number | null
+  custom_reps:  string | null
+  notes:        string
+  sort_order:   number
+  created_at:   string
+  exercise:     ExerciseLibraryItem   // joined
+}
+
+export type NewWorkoutSlot = Omit<WorkoutSlot, 'id' | 'user_id' | 'created_at' | 'exercise'>

@@ -16,22 +16,25 @@ const STATUS_CONFIG: Record<SyncStatus, StatusConfig> = {
 export default function SyncDot({ status }: SyncDotProps) {
   const s = STATUS_CONFIG[status]
 
+  // Hide entirely when idle (no active message to show)
+  if (status === 'idle') return null
+
   return (
-    <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 3 }}>
+    <div style={{ display: 'flex', alignItems: 'center', gap: 5, marginTop: 3 }}>
       <div
         className={status === 'saving' ? 'pulse' : ''}
         style={{
-          width: 7,
-          height: 7,
+          width: 6,
+          height: 6,
           borderRadius: '50%',
           background: s.color,
-          boxShadow: s.glow ? `0 0 8px ${s.color}` : 'none',
+          boxShadow: s.glow ? `0 0 6px ${s.color}` : 'none',
           transition: 'background 0.4s, box-shadow 0.4s',
           flexShrink: 0,
         }}
       />
       <span style={{ fontSize: 10, color: 'var(--text-muted)' }}>
-        {s.label ?? '5:00 /km goal · 17 weeks · Week 1 starts 6 Apr 2026'}
+        {s.label}
       </span>
     </div>
   )

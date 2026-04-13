@@ -42,6 +42,14 @@ function currentMondayISO(): string {
   const diff = dow === 0 ? -6 : 1 - dow
   return localISO(new Date(d.getFullYear(), d.getMonth(), d.getDate() + diff))
 }
+
+const _DOW: Record<string, number> = { Monday:0,Tuesday:1,Wednesday:2,Thursday:3,Friday:4,Saturday:5,Sunday:6 }
+const _MO  = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']
+function dayDate(weekStart: string, weekday: string): string {
+  const [y,m,d] = weekStart.split('-').map(Number)
+  const dt = new Date(y, m-1, d + (_DOW[weekday] ?? 0))
+  return `${dt.getDate()} ${_MO[dt.getMonth()]}`
+}
 // formatWeekRange imported from WeekPicker
 
 // ─── Ingredient editor ────────────────────────────────────────────────────────
@@ -346,6 +354,7 @@ export default function FoodPlanner() {
             <div key={day} style={{ marginBottom: 20 }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
                 <div style={{ fontSize: 13, fontWeight: 700, color: 'var(--text-secondary)' }}>{day}</div>
+                <div style={{ fontSize: 11, color: 'var(--text-muted)', fontFamily: 'var(--font-mono)' }}>{dayDate(weekStart, day)}</div>
                 <div style={{ flex: 1, height: 1, background: 'var(--border)' }} />
               </div>
               {MEAL_TYPES.map(mt => (

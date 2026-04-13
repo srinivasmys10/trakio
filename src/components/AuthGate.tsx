@@ -141,6 +141,7 @@ export default function AuthGate() {
   const [email,       setEmail]       = useState('')
   const [password,    setPassword]    = useState('')
   const [name,        setName]        = useState('')
+  const [username,    setUsername]    = useState('')
   const [loading,     setLoading]     = useState(false)
   const [googleLoading, setGoogleLoading] = useState(false)
   const [error,       setError]       = useState<string | null>(null)
@@ -154,13 +155,13 @@ export default function AuthGate() {
     setError(null)
     setSuccessMsg(null)
 
-    if (!email.trim())    { setError('Email is required'); return }
+    if (!email.trim())    { setError(mode === 'signup' ? 'Email is required' : 'Email or username is required'); return }
     if (password.length < 6) { setError('Password must be at least 6 characters'); return }
 
     setLoading(true)
     try {
       if (mode === 'signup') {
-        await signUpWithEmail(email, password, name || undefined)
+        await signUpWithEmail(email, password, name || undefined, username.trim() || undefined)
         setSuccessMsg('Account created! Check your email to confirm, then sign in.')
         setMode('signin')
         setPassword('')
@@ -288,13 +289,23 @@ export default function AuthGate() {
               />
             )}
 
+            {mode === 'signup' && (
+              <InputField
+                label="Username"
+                value={username}
+                onChange={setUsername}
+                placeholder="e.g. alex_runs (letters, numbers, _)"
+                autoComplete="username"
+              />
+            )}
+
             <InputField
-              label="Email"
-              type="email"
+              label={mode === 'signup' ? 'Email' : 'Email or Username'}
+              type={mode === 'signup' ? 'email' : 'text'}
               value={email}
               onChange={setEmail}
-              placeholder="you@example.com"
-              autoComplete={mode === 'signup' ? 'email' : 'username'}
+              placeholder={mode === 'signup' ? 'you@example.com' : 'your@email.com or username'}
+              autoComplete={mode === 'signup' ? 'email' : 'username email'}
             />
 
             <InputField

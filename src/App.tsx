@@ -15,7 +15,8 @@ import Plan        from './pages/Plan'
 import Gym         from './pages/Gym'
 import Recovery    from './pages/Recovery'
 import Nutrition   from './pages/Nutrition'
-import FoodPlanner from './pages/FoodPlanner'
+import FoodPlanner     from './pages/FoodPlanner'
+import WorkoutPlanner from './pages/WorkoutPlanner'
 import type { Progress, SyncStatus, NavId, NavItem } from './types'
 
 // ─── Nav config ───────────────────────────────────────────────────────────────
@@ -27,8 +28,9 @@ const AUTH_NAV: NavItem[] = [
   { id: 'recovery',  label: 'Recovery',  icon: '🧘' },
   { id: 'nutrition', label: 'Nutrition', icon: '🥗' },
   { id: 'food',      label: 'Meals',     icon: '🍽' },
+  { id: 'workout',   label: 'Workout',   icon: '💪' },
 ]
-const MEALS_NAV_IDS: NavId[] = ['food']
+const MEALS_NAV_IDS: NavId[] = ['food', 'workout']
 
 // Map NavId → URL path and vice-versa
 const NAV_TO_PATH: Record<NavId, string> = {
@@ -38,6 +40,7 @@ const NAV_TO_PATH: Record<NavId, string> = {
   recovery:  '/recovery',
   nutrition: '/nutrition',
   food:      '/meals',
+  workout:   '/workout',
 }
 
 const PATH_TO_NAV: Record<string, NavId> = Object.fromEntries(
@@ -85,15 +88,17 @@ function Shell({ nav, theme, onToggle, pct, completed, total, syncStatus, user, 
                     width: 34, height: 34, borderRadius: 10, flexShrink: 0,
                     background: activeId === 'food'
                       ? 'linear-gradient(135deg,#f59e0b,#ef4444)'
+                      : activeId === 'workout'
+                      ? 'linear-gradient(135deg,#a78bfa,#60a5fa)'
                       : 'linear-gradient(135deg,#4ade80,#22d3ee)',
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
                     fontSize: 17,
                   }}>
-                    {activeId === 'food' ? '🍽' : '🏃'}
+                    {activeId === 'food' ? '🍽' : activeId === 'workout' ? '💪' : '🏃'}
                   </div>
                   <div>
                     <div style={{ fontSize: 14, fontWeight: 800, letterSpacing: '-0.01em', lineHeight: 1.2, color: 'var(--text-primary)' }}>
-                      {activeId === 'food' ? 'Meal Planner' : 'Training Hub'}
+                      {activeId === 'food' ? 'Meal Planner' : activeId === 'workout' ? 'Workout Planner' : 'Training Hub'}
                     </div>
                     <SyncDot status={syncStatus} />
                   </div>
@@ -141,7 +146,7 @@ function Shell({ nav, theme, onToggle, pct, completed, total, syncStatus, user, 
           </div>
 
           {/* Progress bar — training sections only */}
-          {pct !== undefined && activeId !== 'food' && (
+          {pct !== undefined && activeId !== 'food' && activeId !== 'workout' && (
             <div style={{ marginTop: 10, height: 3, background: 'var(--bg-track)', borderRadius: 2, overflow: 'hidden' }}>
               <div style={{ height: '100%', width: `${pct}%`, background: 'linear-gradient(90deg,var(--green),var(--blue))', borderRadius: 2, transition: 'width 0.6s' }} />
             </div>
@@ -159,7 +164,7 @@ function Shell({ nav, theme, onToggle, pct, completed, total, syncStatus, user, 
         position: 'fixed', bottom: 0, left: 0, right: 0,
         background: 'var(--bg-nav)', borderTop: '1px solid var(--border)',
         display: 'flex', alignItems: 'stretch',
-        padding: '6px 4px max(10px,env(safe-area-inset-bottom))',
+        padding: '4px 6px max(10px,env(safe-area-inset-bottom))',
         zIndex: 100, backdropFilter: 'blur(16px)',
       }}>
         {nav.map((item, idx) => {
@@ -179,19 +184,21 @@ function Shell({ nav, theme, onToggle, pct, completed, total, syncStatus, user, 
                 onClick={() => navigate(NAV_TO_PATH[item.id])}
                 style={{
                   flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center',
-                  gap: 3, padding: '4px 8px', borderRadius: 10,
+                  justifyContent: 'center',
+                  gap: 2, padding: '5px 4px 4px',
+                  borderRadius: 10,
                   background: active
-                    ? isMeals ? 'rgba(245,158,11,0.12)' : 'rgba(74,222,128,0.12)'
+                    ? item.id === 'workout' ? 'rgba(167,139,250,0.12)' : isMeals ? 'rgba(245,158,11,0.12)' : 'rgba(74,222,128,0.12)'
                     : 'transparent',
                   color: active
-                    ? isMeals ? 'var(--amber)' : 'var(--green)'
+                    ? item.id === 'workout' ? 'var(--purple)' : isMeals ? 'var(--amber)' : 'var(--green)'
                     : 'var(--text-muted)',
                   border: 'none', cursor: 'pointer', transition: 'all 0.18s',
-                  minWidth: 48,
+                  minWidth: 44, maxWidth: 72,
                 }}
               >
-                <span style={{ fontSize: 18, lineHeight: 1 }}>{item.icon}</span>
-                <span style={{ fontSize: 9, fontWeight: 700, letterSpacing: '0.02em' }}>{item.label}</span>
+                <span style={{ fontSize: 20, lineHeight: '22px', display: 'block', textAlign: 'center' }}>{item.icon}</span>
+                <span style={{ fontSize: 9, fontWeight: 700, letterSpacing: '0.01em', lineHeight: 1.2, textAlign: 'center', whiteSpace: 'nowrap' }}>{item.label}</span>
               </button>
             </div>
           )
@@ -281,6 +288,7 @@ function TrainingApp({ userId, user }: { userId: string; user: AuthUserShape }) 
         <Route path="/recovery"  element={<Recovery />} />
         <Route path="/nutrition" element={<Nutrition />} />
         <Route path="/meals"     element={<FoodPlanner />} />
+        <Route path="/workout"  element={<WorkoutPlanner />} />
         {/* Catch-all → dashboard */}
         <Route path="*"          element={<Dashboard progress={progress} />} />
       </Routes>

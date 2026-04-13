@@ -15,33 +15,92 @@ function toAuthUser(raw: any): AuthUser {
   }
 }
 
-// ─── Sign up with email + password ───────────────────────────────────────────
-// Supabase Auth hashes the password with bcrypt before storing it.
-// The raw password is NEVER persisted anywhere in your database.
+// ─── Username → email resolution ─────────────────────────────────────────────
+
+/**
+ * Look up the email associated with a username.
+ * Returns null if not found.
+ */
+async function emailForUsername(username: string): Promise<string | null> {
+  // user_profiles stores (id, username); we join to auth.users via a view
+  // Supabase doesn't expose auth.users directly in client queries, so we
+  // store email in user_profiles or use a Postgres function.
+  //
+  // Strategy: query user_profiles for the UUID, then call
+  // supabase.auth.admin (not available client-side). Instead, we store
+  // email in user_profiles on sign-up.
+  const { data, error } = await supabase
+    .from('user_profiles')
+    .select('email')
+    .ilike('username', username)
+    .maybeSingle()
+
+  if (error || !data) return null
+  return (data as { email: string }).email ?? null
+}
+
+// ─── Sign up with email + username + password ─────────────────────────────────
 
 export async function signUpWithEmail(
-  email: string,
-  password: string,
-  displayName?: string
+  email:       string,
+  password:    string,
+  displayName?: string,
+  username?:   string
 ): Promise<AuthUser> {
+  // 1. Check username availability
+  if (username) {
+    const { data: existing } = await supabase
+      .from('user_profiles')
+      .select('id')
+      .ilike('username', username)
+      .maybeSingle()
+
+    if (existing) throw new Error('Username is already taken. Please choose another.')
+  }
+
+  // 2. Create the auth user
   const { data, error } = await supabase.auth.signUp({
     email,
     password,
     options: {
-      data: displayName ? { full_name: displayName } : undefined,
+      data: {
+        ...(displayName ? { full_name: displayName } : {}),
+        ...(username    ? { username }               : {}),
+      },
     },
   })
   if (error) throw error
   if (!data.user) throw new Error('Sign-up succeeded but no user was returned.')
+
+  // 3. Upsert user_profiles with email + chosen username
+  if (data.user && username) {
+    await supabase.from('user_profiles').upsert({
+      id:       data.user.id,
+      username: username.toLowerCase().replace(/[^a-z0-9_]/g, ''),
+      email,
+    }, { onConflict: 'id' })
+  }
+
   return toAuthUser(data.user)
 }
 
-// ─── Sign in with email + password ───────────────────────────────────────────
+// ─── Sign in with email OR username ──────────────────────────────────────────
 
 export async function signInWithEmail(
-  email: string,
-  password: string
+  emailOrUsername: string,
+  password:        string
 ): Promise<AuthUser> {
+  let email = emailOrUsername.trim()
+
+  // Detect username (no @ symbol)
+  if (!email.includes('@')) {
+    const resolved = await emailForUsername(email)
+    if (!resolved) {
+      throw new Error('No account found with that username. Try signing in with your email instead.')
+    }
+    email = resolved
+  }
+
   const { data, error } = await supabase.auth.signInWithPassword({ email, password })
   if (error) throw error
   if (!data.user) throw new Error('Sign-in succeeded but no user was returned.')
@@ -49,18 +108,13 @@ export async function signInWithEmail(
 }
 
 // ─── Sign in with Google ──────────────────────────────────────────────────────
-// Redirects to Google's consent screen. On return, Supabase handles the OAuth
-// token exchange and creates/updates the user in auth.users automatically.
 
 export async function signInWithGoogle(): Promise<void> {
   const { error } = await supabase.auth.signInWithOAuth({
     provider: 'google',
     options: {
       redirectTo: window.location.origin,
-      queryParams: {
-        access_type: 'offline',
-        prompt: 'consent',
-      },
+      queryParams: { access_type: 'offline', prompt: 'consent' },
     },
   })
   if (error) throw error
@@ -73,7 +127,7 @@ export async function signOut(): Promise<void> {
   if (error) throw error
 }
 
-// ─── Get current session (used on app boot) ───────────────────────────────────
+// ─── Get current user ─────────────────────────────────────────────────────────
 
 export async function getCurrentUser(): Promise<AuthUser | null> {
   const { data: { user } } = await supabase.auth.getUser()
