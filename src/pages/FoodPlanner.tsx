@@ -216,7 +216,7 @@ function LibraryPanel({ library, saving, onAdd, onUpdate, onDelete }: { library:
 
 // ─── Slot Card ────────────────────────────────────────────────────────────────
 
-function SlotCard({ slot, weekday, mealType, library, saving, onAssign, onRemove }: { slot: MealPlanSlot | undefined; weekday: Weekday; mealType: MealType; library: MealLibraryItem[]; saving: boolean; onAssign: (mealId: number) => Promise<void>; onRemove: () => Promise<void> }) {
+function SlotCard({ slot, weekday: _weekday, mealType, library, saving, onAssign, onRemove }: { slot: MealPlanSlot | undefined; weekday: Weekday; mealType: MealType; library: MealLibraryItem[]; saving: boolean; onAssign: (mealId: number) => Promise<void>; onRemove: () => Promise<void> }) {
   const m          = MEAL_LABELS[mealType]
   const compatible = library.filter(l => l.meal_type === mealType)
   const [open, setOpen] = useState(false)

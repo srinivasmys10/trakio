@@ -171,7 +171,6 @@ function Shell({ nav, theme, onToggle, pct, completed, total, syncStatus, user, 
           const active  = activeId === item.id
           const isMeals = MEALS_NAV_IDS.includes(item.id)
           const prev    = nav[idx - 1]
-          const isFirst = idx === 0
           const sectionBreak = isMeals && prev && !MEALS_NAV_IDS.includes(prev.id)
 
           return (

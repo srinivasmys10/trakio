@@ -1,6 +1,6 @@
 import { weekStartISO } from '../lib/dates'
 import type {
-  Phase, Week, GymSplit, MobilityItem,
+  Phase, Week, MobilityItem,
   NutritionTip, PhaseColor,
 } from '../types'
 

@@ -72,7 +72,7 @@ export interface PhaseColor {
 
 export interface AuthUser {
   id:         string
-  email:      string | undefined
+  email?:     string | undefined
   name:       string | undefined  // from user_metadata.full_name (Google)
   avatarUrl:  string | undefined  // from user_metadata.avatar_url  (Google)
   provider:   string              // 'email' | 'google'
