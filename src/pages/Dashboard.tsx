@@ -80,7 +80,7 @@ export default function Dashboard({ progress }: DashboardProps) {
               <div style={{ fontSize: 11, color: 'var(--text-muted)', marginBottom: 8 }}>
                 Wk {ph.weeks[0]}–{ph.weeks[ph.weeks.length - 1]}
               </div>
-              <div style={{ height: 4, background: 'rgba(var(--fg-rgb),0.07)', borderRadius: 2 }}>
+              <div style={{ height: 4, background: 'var(--surface-hover)', borderRadius: 2 }}>
                 <div style={{ height: '100%', width: `${pct}%`, background: pc.border, borderRadius: 2, transition: 'width 0.5s' }} />
               </div>
               <div style={{ fontSize: 11, color: pc.text, marginTop: 4, textAlign: 'right', fontWeight: 700 }}>
@@ -111,7 +111,7 @@ export default function Dashboard({ progress }: DashboardProps) {
             key={i}
             style={{
               padding: '8px 0',
-              borderBottom: i < INJURY_TIPS.length - 1 ? '1px solid rgba(var(--fg-rgb),0.05)' : 'none',
+              borderBottom: i < INJURY_TIPS.length - 1 ? '1px solid var(--border-subtle)' : 'none',
               fontSize: 13,
               color: 'var(--text-secondary)',
               lineHeight: 1.5,
@@ -130,7 +130,7 @@ export default function Dashboard({ progress }: DashboardProps) {
             key={i}
             style={{
               padding: '9px 0',
-              borderBottom: i < PROGRESSION.length - 1 ? '1px solid rgba(var(--fg-rgb),0.05)' : 'none',
+              borderBottom: i < PROGRESSION.length - 1 ? '1px solid var(--border-subtle)' : 'none',
             }}
           >
             <div style={{ fontSize: 13, fontWeight: 700, color: 'var(--blue)', marginBottom: 3 }}>

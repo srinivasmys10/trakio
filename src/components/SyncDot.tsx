@@ -7,31 +7,34 @@ interface StatusConfig {
 }
 
 const STATUS_CONFIG: Record<SyncStatus, StatusConfig> = {
-  idle: { color: 'rgba(var(--fg-rgb),0.2)', label: null, glow: false },
-  saving: { color: '#f59e0b', label: 'Syncing…', glow: true },
-  saved: { color: '#4ade80', label: 'Saved ✓', glow: false },
-  error: { color: '#f87171', label: '⚠ Sync error', glow: false },
+  idle:   { color: 'var(--text-faint)', label: null,                   glow: false },
+  saving: { color: '#f59e0b',               label: 'Syncing to Supabase…', glow: true  },
+  saved:  { color: '#4ade80',               label: 'Saved to Supabase ✓',  glow: false },
+  error:  { color: '#f87171',               label: '⚠ Sync error',         glow: false },
 }
 
 export default function SyncDot({ status }: SyncDotProps) {
   const s = STATUS_CONFIG[status]
 
+  // Hide entirely when idle (no active message to show)
+  if (status === 'idle') return null
+
   return (
-    <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 3 }}>
+    <div style={{ display: 'flex', alignItems: 'center', gap: 5, marginTop: 3 }}>
       <div
         className={status === 'saving' ? 'pulse' : ''}
         style={{
-          width: 7,
-          height: 7,
+          width: 6,
+          height: 6,
           borderRadius: '50%',
           background: s.color,
-          boxShadow: s.glow ? `0 0 8px ${s.color}` : 'none',
+          boxShadow: s.glow ? `0 0 6px ${s.color}` : 'none',
           transition: 'background 0.4s, box-shadow 0.4s',
           flexShrink: 0,
         }}
       />
       <span style={{ fontSize: 10, color: 'var(--text-muted)' }}>
-        {s.label ?? '5:00 /km goal · 17 weeks · Week 1 starts 6 Apr 2026'}
+        {s.label}
       </span>
     </div>
   )

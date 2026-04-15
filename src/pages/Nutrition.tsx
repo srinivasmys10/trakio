@@ -119,7 +119,7 @@ export default function Nutrition() {
         <div style={{ overflowX: 'auto' }}>
           <table style={{ minWidth: 420 }}>
             <thead>
-              <tr style={{ borderBottom: '1px solid var(--border)', background: 'rgba(var(--fg-rgb),0.05)' }}>
+              <tr style={{ borderBottom: '1px solid var(--border)', background: 'var(--overlay-dark)' }}>
                 {['Food', 'Protein', 'Notes'].map((h) => (
                   <th
                     key={h}
@@ -136,7 +136,7 @@ export default function Nutrition() {
             </thead>
             <tbody>
               {VEG_PROTEINS.map((row, i) => (
-                <tr key={i} style={{ borderBottom: '1px solid rgba(var(--fg-rgb),0.04)' }}>
+                <tr key={i} style={{ borderBottom: '1px solid var(--border-subtle)' }}>
                   <td style={{ padding: '9px 14px', fontSize: 13, fontWeight: 600, color: 'var(--text-primary)', whiteSpace: 'nowrap' }}>
                     {row.food}
                   </td>
@@ -161,7 +161,7 @@ export default function Nutrition() {
             key={i}
             style={{
               padding: '7px 0',
-              borderBottom: i < RACE_DINNER.length - 1 ? '1px solid rgba(var(--fg-rgb),0.05)' : 'none',
+              borderBottom: i < RACE_DINNER.length - 1 ? '1px solid var(--border-subtle)' : 'none',
               display: 'flex', gap: 10, alignItems: 'center',
             }}
           >
@@ -182,7 +182,7 @@ export default function Nutrition() {
             key={i}
             style={{
               padding: '8px 0',
-              borderBottom: i < RACE_MORNING.length - 1 ? '1px solid rgba(var(--fg-rgb),0.05)' : 'none',
+              borderBottom: i < RACE_MORNING.length - 1 ? '1px solid var(--border-subtle)' : 'none',
               display: 'flex', gap: 10, alignItems: 'flex-start',
             }}
           >
@@ -200,7 +200,7 @@ export default function Nutrition() {
             key={i}
             style={{
               padding: '10px 0',
-              borderBottom: i < SUPPLEMENTS.length - 1 ? '1px solid rgba(var(--fg-rgb),0.05)' : 'none',
+              borderBottom: i < SUPPLEMENTS.length - 1 ? '1px solid var(--border-subtle)' : 'none',
             }}
           >
             <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4, flexWrap: 'wrap' }}>

@@ -1,11 +1,11 @@
-import { GYM_SPLITS } from '../data/plan'
 import type { GymTableProps } from '../types'
 
 const COLS = ['Exercise', 'Sets', 'Reps', 'Load', 'Muscles', 'Notes'] as const
 
-export default function GymTable({ splitName }: GymTableProps) {
+export default function GymTable({ splitName, gymSplits }: GymTableProps) {
+  // Strip modifier suffixes like "(–20% volume)" before lookup
   const baseKey = splitName.replace(/\s*\(.*?\)\s*/g, '').trim()
-  const split   = GYM_SPLITS[baseKey] ?? GYM_SPLITS[splitName]
+  const split   = gymSplits[baseKey] ?? gymSplits[splitName]
 
   if (!split) {
     return (
@@ -43,7 +43,7 @@ export default function GymTable({ splitName }: GymTableProps) {
           </thead>
           <tbody>
             {split.exercises.map((ex, i) => (
-              <tr key={i} style={{ borderBottom: '1px solid rgba(var(--fg-rgb),0.04)' }}>
+              <tr key={i} style={{ borderBottom: '1px solid var(--border-subtle)' }}>
                 <td style={{ padding: '9px 8px', color: 'var(--text-primary)', fontWeight: 600, whiteSpace: 'nowrap' }}>{ex.name}</td>
                 <td style={{ padding: '9px 8px', color: 'var(--blue)', textAlign: 'center', fontWeight: 700 }}>{ex.sets}</td>
                 <td style={{ padding: '9px 8px', color: 'var(--green)', whiteSpace: 'nowrap' }}>{ex.reps}</td>
