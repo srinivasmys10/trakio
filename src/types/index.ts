@@ -308,8 +308,18 @@ export interface WorkoutSlot {
   custom_reps: string | null
   notes: string
   sort_order: number
+  completed: boolean           // per-exercise completion
   created_at: string
   exercise: ExerciseLibraryItem   // joined
 }
 
-export type NewWorkoutSlot = Omit<WorkoutSlot, 'id' | 'user_id' | 'created_at' | 'exercise'>
+export type NewWorkoutSlot = Omit<WorkoutSlot, 'id' | 'user_id' | 'created_at' | 'exercise' | 'completed'>
+
+export interface DayCompletion {
+  id: number
+  user_id: string
+  week_start: string
+  weekday: Weekday
+  completed: boolean
+  completed_at: string
+}

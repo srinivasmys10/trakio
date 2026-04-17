@@ -170,7 +170,11 @@ export default function AuthGate() {
         // useAuth() in App will detect the session change automatically
       }
     } catch (err: unknown) {
-      const msg = err instanceof Error ? err.message : 'Authentication failed'
+      let msg = err instanceof Error ? err.message : 'Authentication failed'
+      // Supabase captcha error — user needs to disable it in their dashboard
+      if (msg.toLowerCase().includes('captcha') || msg.toLowerCase().includes('hcaptcha') || msg.toLowerCase().includes('turnstile')) {
+        msg = 'Sign-up is blocked by bot protection. To fix: go to your Supabase Dashboard → Authentication → Settings → disable "Enable Captcha protection", then try again.'
+      }
       setError(msg)
     } finally {
       setLoading(false)

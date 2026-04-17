@@ -261,14 +261,17 @@ function LibraryPanel({ exercises, saving, onAdd, onUpdate, onRemove }: {
 
 // ─── Day workout card ─────────────────────────────────────────────────────────
 
-function DayWorkout({ day, slots, exercises, saving, weekStart, onAdd, onRemove }: {
-  day:       Weekday
-  slots:     import('../types').WorkoutSlot[]
-  exercises: ExerciseLibraryItem[]
-  saving:    boolean
-  weekStart: string
-  onAdd:     (exerciseId: number) => Promise<void>
-  onRemove:  (id: number) => Promise<void>
+function DayWorkout({ day, slots, exercises, saving, weekStart, dayDone, onAdd, onRemove, onToggle, onDayToggle }: {
+  day:          Weekday
+  slots:        import('../types').WorkoutSlot[]
+  exercises:    ExerciseLibraryItem[]
+  saving:       boolean
+  weekStart:    string
+  dayDone:      boolean
+  onAdd:        (exerciseId: number) => Promise<void>
+  onRemove:     (id: number) => Promise<void>
+  onToggle:     (id: number, completed: boolean) => Promise<void>
+  onDayToggle:  (completed: boolean) => Promise<void>
 }) {
   const [showPicker, setShowPicker] = useState(false)
   const [searchQ,    setSearchQ]    = useState('')
@@ -283,24 +286,74 @@ function DayWorkout({ day, slots, exercises, saving, weekStart, onAdd, onRemove 
     return acc
   }, {})
 
+  const completedCount = slots.filter(s => s.completed).length
+
   return (
     <div style={{ marginBottom: 20 }}>
+      {/* Day header */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
-        <div style={{ fontSize: 13, fontWeight: 700, color: 'var(--text-secondary)' }}>{day}</div>
+        <div style={{ fontSize: 13, fontWeight: 700, color: dayDone ? 'var(--green)' : 'var(--text-secondary)' }}>{day}</div>
         <div style={{ fontSize: 11, color: 'var(--text-muted)', fontFamily: 'var(--font-mono)' }}>{dayDate(weekStart, day)}</div>
-        <div style={{ flex: 1, height: 1, background: 'var(--border)' }} />
+        {/* Day completion badge */}
+        {slots.length > 0 && (
+          <button
+            onClick={() => onDayToggle(!dayDone)}
+            disabled={saving}
+            style={{
+              display: 'flex', alignItems: 'center', gap: 4,
+              padding: '2px 8px', borderRadius: 20, border: 'none', cursor: 'pointer',
+              fontSize: 10, fontWeight: 700, transition: 'all 0.2s',
+              background: dayDone ? 'rgba(74,222,128,0.15)' : 'var(--surface)',
+              color: dayDone ? 'var(--green)' : 'var(--text-muted)',
+              outline: dayDone ? '1px solid rgba(74,222,128,0.4)' : '1px solid var(--border)',
+            }}
+          >
+            {dayDone ? '✓ Done' : `${completedCount}/${slots.length}`}
+          </button>
+        )}
+        <div style={{ flex: 1, height: 1, background: dayDone ? 'rgba(74,222,128,0.3)' : 'var(--border)', transition: 'background 0.3s' }} />
         <span style={{ fontSize: 11, color: 'var(--text-muted)' }}>{slots.length} exercise{slots.length !== 1 ? 's' : ''}</span>
       </div>
 
-      {/* Existing slots */}
+      {/* Exercise slots */}
       {slots.map(slot => {
         const info = EXERCISE_TYPE_LABELS[slot.exercise.exercise_type]
+        const done = slot.completed
         return (
-          <div key={slot.id} style={{ background: info.bg, border: `1px solid ${info.border}`, borderRadius: 9, padding: '10px 12px', marginBottom: 6, display: 'flex', alignItems: 'flex-start', gap: 8 }}>
-            <span style={{ fontSize: 14, flexShrink: 0, marginTop: 1 }}>{info.icon}</span>
+          <div key={slot.id} style={{
+            background: done ? 'rgba(74,222,128,0.06)' : info.bg,
+            border: `1px solid ${done ? 'rgba(74,222,128,0.35)' : info.border}`,
+            borderRadius: 9, padding: '10px 12px', marginBottom: 6,
+            display: 'flex', alignItems: 'flex-start', gap: 8,
+            opacity: done ? 0.85 : 1, transition: 'all 0.2s',
+          }}>
+            {/* Checkbox */}
+            <button
+              onClick={() => onToggle(slot.id, !done)}
+              disabled={saving}
+              aria-label={done ? 'Mark incomplete' : 'Mark complete'}
+              style={{
+                flexShrink: 0, marginTop: 1,
+                width: 22, height: 22, borderRadius: 6,
+                border: `2px solid ${done ? 'var(--green)' : info.border}`,
+                background: done ? 'rgba(74,222,128,0.2)' : 'transparent',
+                cursor: 'pointer', display: 'flex', alignItems: 'center',
+                justifyContent: 'center', transition: 'all 0.18s',
+              }}
+            >
+              {done && <span style={{ color: 'var(--green)', fontSize: 12, fontWeight: 700, lineHeight: 1 }}>✓</span>}
+            </button>
+
             <div style={{ flex: 1, minWidth: 0 }}>
-              <div style={{ fontSize: 13, fontWeight: 700, color: 'var(--text-primary)' }}>{slot.exercise.name}</div>
-              <div style={{ fontSize: 11, color: info.color, fontWeight: 600, marginTop: 2 }}>
+              <div style={{
+                fontSize: 13, fontWeight: 700,
+                color: done ? 'var(--text-muted)' : 'var(--text-primary)',
+                textDecoration: done ? 'line-through' : 'none',
+                transition: 'all 0.2s',
+              }}>
+                {slot.exercise.name}
+              </div>
+              <div style={{ fontSize: 11, color: done ? 'var(--text-muted)' : info.color, fontWeight: 600, marginTop: 2 }}>
                 {slot.custom_sets ?? slot.exercise.default_sets} sets · {slot.custom_reps ?? slot.exercise.default_reps}
               </div>
               {slot.exercise.impact_areas.length > 0 && (
@@ -309,6 +362,8 @@ function DayWorkout({ day, slots, exercises, saving, weekStart, onAdd, onRemove 
                 </div>
               )}
             </div>
+
+            {/* Remove button */}
             <button onClick={() => onRemove(slot.id)} disabled={saving} style={{ background: 'rgba(248,113,113,0.1)', border: '1px solid rgba(248,113,113,0.25)', borderRadius: 6, color: 'var(--red)', fontSize: 12, width: 26, height: 26, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>×</button>
           </div>
         )
@@ -355,7 +410,7 @@ export default function WorkoutPlanner() {
   const pickerRef                     = useRef<HTMLDivElement>(null)
 
   const { exercises, loading: libLoading, error: libError, saving: libSaving, add, update, remove } = useExerciseLibrary()
-  const { slots, loading: planLoading, error: planError, saving: planSaving, addSlot, removeSlot } = useWorkoutPlan(weekStart)
+  const { slots, dayCompletions, loading: planLoading, error: planError, saving: planSaving, addSlot, toggleCompleted, markDayDone, removeSlot } = useWorkoutPlan(weekStart)
 
   const slotsFor = (day: Weekday) => slots.filter(s => s.weekday === day).sort((a, b) => a.sort_order - b.sort_order)
 
@@ -402,7 +457,7 @@ export default function WorkoutPlanner() {
                   📅 {formatWeekRange(weekStart)}
                   <span style={{ fontSize: 10, color: 'var(--text-muted)' }}>{showPicker ? '▲' : '▼'}</span>
                 </div>
-                <div style={{ fontSize: 10, color: 'var(--text-muted)', marginTop: 2 }}>{slots.length} exercise{slots.length !== 1 ? 's' : ''} scheduled</div>
+                <div style={{ fontSize: 10, color: 'var(--text-muted)', marginTop: 2 }}>{slots.filter(s => s.completed).length}/{slots.length} completed</div>
               </button>
               {showPicker && (
                 <WeekPicker value={weekStart} onChange={iso => { setWeekStart(iso); setShowPicker(false) }} onClose={() => setShowPicker(false)} />
@@ -427,8 +482,11 @@ export default function WorkoutPlanner() {
               exercises={exercises}
               saving={planSaving}
               weekStart={weekStart}
+              dayDone={dayCompletions.some(d => d.weekday === day && d.completed)}
               onAdd={exId => addSlot({ weekStart, weekday: day, exerciseId: exId })}
               onRemove={removeSlot}
+              onToggle={(id, completed) => toggleCompleted(id, completed, day, weekStart, slots)}
+              onDayToggle={completed => markDayDone(weekStart, day, completed)}
             />
           ))}
         </>
