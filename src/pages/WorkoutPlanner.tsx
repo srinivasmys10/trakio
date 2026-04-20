@@ -1,5 +1,6 @@
 import { useState, useRef, useCallback, type FormEvent } from 'react'
-import WeekPicker, { formatWeekRange } from '../components/WeekPicker'
+import WeekPicker,     { formatWeekRange } from '../components/WeekPicker'
+import WorkoutCalendar from '../components/WorkoutCalendar'
 import AudioRecorder from '../components/AudioRecorder'
 import { useExerciseLibrary } from '../hooks/useExerciseLibrary'
 import { useWorkoutPlan }     from '../hooks/useWorkoutPlan'
@@ -405,7 +406,7 @@ function DayWorkout({ day, slots, exercises, saving, weekStart, dayDone, onAdd, 
 
 export default function WorkoutPlanner() {
   const [weekStart,   setWeekStart]   = useState(currentMondayISO)
-  const [tab,         setTab]         = useState<'plan' | 'library'>('plan')
+  const [tab,         setTab]         = useState<'overview' | 'plan' | 'library'>('plan')
   const [showPicker,  setShowPicker]  = useState(false)
   const pickerRef                     = useRef<HTMLDivElement>(null)
 
@@ -437,12 +438,19 @@ export default function WorkoutPlanner() {
     <div className="fade-in">
       {/* ── Tabs ── */}
       <div style={{ display: 'flex', background: 'var(--surface)', borderRadius: 10, padding: 3, marginBottom: 18 }}>
-        {(['plan', 'library'] as const).map(t => (
-          <button key={t} onClick={() => setTab(t)} style={{ flex: 1, padding: '8px 0', borderRadius: 8, fontSize: 13, fontWeight: 700, cursor: 'pointer', border: 'none', fontFamily: 'inherit', transition: 'all 0.2s', background: tab === t ? 'var(--bg-header)' : 'transparent', color: tab === t ? 'var(--text-primary)' : 'var(--text-muted)', boxShadow: tab === t ? '0 1px 4px rgba(0,0,0,0.12)' : 'none' }}>
-            {t === 'plan' ? '💪 Week Plan' : '📋 Exercise Library'}
+        {([
+          ['overview', '📊 Overview'],
+          ['plan',     '💪 Week Plan'],
+          ['library',  '📋 Library'],
+        ] as const).map(([t, label]) => (
+          <button key={t} onClick={() => setTab(t)} style={{ flex: 1, padding: '8px 4px', borderRadius: 8, fontSize: 12, fontWeight: 700, cursor: 'pointer', border: 'none', fontFamily: 'inherit', transition: 'all 0.2s', background: tab === t ? 'var(--bg-header)' : 'transparent', color: tab === t ? 'var(--text-primary)' : 'var(--text-muted)', boxShadow: tab === t ? '0 1px 4px rgba(0,0,0,0.12)' : 'none' }}>
+            {label}
           </button>
         ))}
       </div>
+
+      {/* ── Overview tab ── */}
+      {tab === 'overview' && <WorkoutCalendar />}
 
       {/* ── Week Plan ── */}
       {tab === 'plan' && (

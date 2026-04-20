@@ -160,3 +160,76 @@ export async function removeWorkoutSlot(id: number): Promise<void> {
   const { error } = await supabase.from('workout_plans').delete().eq('id', id)
   if (error) throw error
 }
+
+// ─── Load all completions for heatmap (past 52 weeks) ────────────────────────
+
+export interface DailyActivity {
+  date:              string   // "YYYY-MM-DD"
+  exerciseCount:     number   // total exercises scheduled that day
+  completedCount:    number   // how many were completed
+  dayFullyDone:      boolean  // was the day marked fully done
+}
+
+export async function loadYearActivity(): Promise<DailyActivity[]> {
+  const userId = await getAuthUserId()
+
+  // Date range: 52 weeks back from today (364 days)
+  const today  = new Date()
+  const cutoff = new Date(today)
+  cutoff.setDate(cutoff.getDate() - 364)
+  const cutoffISO = `${cutoff.getFullYear()}-${String(cutoff.getMonth()+1).padStart(2,'0')}-${String(cutoff.getDate()).padStart(2,'0')}`
+
+  // Load all workout slots in range
+  const { data: planData, error: planErr } = await supabase
+    .from('workout_plans')
+    .select('week_start, weekday, completed')
+    .eq('user_id', userId)
+    .gte('week_start', cutoffISO)
+
+  if (planErr) throw planErr
+
+  // Load day completions
+  const { data: dayData, error: dayErr } = await supabase
+    .from('workout_day_completions')
+    .select('week_start, weekday, completed')
+    .eq('user_id', userId)
+    .gte('week_start', cutoffISO)
+
+  if (dayErr) throw dayErr
+
+  // Build a map of date → { scheduled, completed, dayDone }
+  const DOW: Record<string, number> = {
+    Monday:0, Tuesday:1, Wednesday:2, Thursday:3, Friday:4, Saturday:5, Sunday:6
+  }
+
+  const activityMap = new Map<string, { scheduled: number; completed: number; dayDone: boolean }>()
+
+  const weekdayToDate = (weekStart: string, weekday: string): string => {
+    const [y, m, d] = weekStart.split('-').map(Number)
+    const dt = new Date(y, m - 1, d + (DOW[weekday] ?? 0))
+    return `${dt.getFullYear()}-${String(dt.getMonth()+1).padStart(2,'0')}-${String(dt.getDate()).padStart(2,'0')}`
+  }
+
+  for (const row of (planData ?? []) as { week_start: string; weekday: string; completed: boolean }[]) {
+    const date = weekdayToDate(row.week_start, row.weekday)
+    const existing = activityMap.get(date) ?? { scheduled: 0, completed: 0, dayDone: false }
+    activityMap.set(date, {
+      ...existing,
+      scheduled: existing.scheduled + 1,
+      completed: existing.completed + (row.completed ? 1 : 0),
+    })
+  }
+
+  for (const row of (dayData ?? []) as { week_start: string; weekday: string; completed: boolean }[]) {
+    const date = weekdayToDate(row.week_start, row.weekday)
+    const existing = activityMap.get(date) ?? { scheduled: 0, completed: 0, dayDone: false }
+    activityMap.set(date, { ...existing, dayDone: row.completed })
+  }
+
+  return Array.from(activityMap.entries()).map(([date, v]) => ({
+    date,
+    exerciseCount:  v.scheduled,
+    completedCount: v.completed,
+    dayFullyDone:   v.dayDone,
+  }))
+}
