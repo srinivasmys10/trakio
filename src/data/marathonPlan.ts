@@ -107,7 +107,7 @@ function day(s: MarathonSession): DaySpec { return s }
 // PHASE 1: BASE  (Weeks 1–6)  — Build aerobic engine, injury prevention
 // ─────────────────────────────────────────────────────────────────────────────
 
-const BASE_STRENGTH_NOTE = 'Strength training is non-negotiable in base phase — it prevents 70% of running injuries.'
+//const BASE_STRENGTH_NOTE = 'Strength training is non-negotiable in base phase — it prevents 70% of running injuries.'
 
 const PHASE1_WEEKS: DaySpec[][] = [
   // Week 1 — 40 km  LR 16 km
@@ -389,7 +389,7 @@ const PHASE5_WEEKS: DaySpec[][] = [
     day({ type:'easy', title:'Easy Run', km:6, pace:P.easy, description:'6 km easy. Begin full carb-loading protocol today (10–12g carbs per kg body weight over the next 3 days).', structure:['6 km easy', 'Carb-load: pasta, rice, bread, oats — fuel the engine'] }),
     day({ type:'easy', title:'Easy Run', km:5, pace:P.easy, description:'5 km easy. Prepare your race kit tonight. Pin on your number. Know your start wave. Know the course.', structure:['5 km easy', 'Race kit check: shoes, socks, shorts, vest, gels, number, timing chip'] }),
     day({ type:'rest', title:'Rest', description:'Full rest. Legs up. Eat well. Sleep. No standing for long periods.', }),
-    day({ type:'recovery', title:'Short Shakeout Run', km:3, pace:P.rec, description:'3 km easy shakeout. Many runners skip this and regret it. Tomorrow's pace will feel controlled and natural after today's movement.', structure:['3 km very easy', '4 × 10-sec strides at race pace', 'Spend the rest of the day off your feet'] }),
+    day({ type:'recovery', title:'Short Shakeout Run', km:3, pace:P.rec, description:'3 km easy shakeout. Many runners skip this and regret it. Tomorrow\'s pace will feel controlled and natural after today\'s movement.', structure:['3 km very easy', '4 × 10-sec strides at race pace', 'Spend the rest of the day off your feet'] }),
     day({ type:'rest', title:'Rest — Race Eve', description:'Complete rest. Lay out your race kit: shoes, number, gels, watch charged. Eat a normal dinner — nothing experimental. Sleep by 9pm.', exercises:['Race kit check: bib, timing chip, shoes, socks, shorts, vest, gels × 5, watch, sunscreen'] }),
   ],
 ]
@@ -399,12 +399,12 @@ const RACE_WEEK: DaySpec[][] = [
   // Week 26 — RACE WEEK  Target: April 4, 2027
   [
     day({ type:'rest', title:'Rest + Easy Walk', description:'Race week. Do nothing that could risk injury. Short walks only. Hydrate well. Carb-load continues.', }),
-    day({ type:'easy', title:'Easy Jog + Strides', km:4, pace:P.rec, description:'4 km very easy jog to keep legs moving. 4 × 10-sec strides at race pace to wake up the fast-twitch fibres.', structure:['4 km easy', '4 × 10-sec strides at 5:00/km with full recovery'] }),
-    day({ type:'easy', title:'Easy Jog', km:3, pace:P.rec, description:'3 km easy jog. No strides. Collect your race number if possible. Visualise the course.', structure:['3 km easy — that's it'] }),
+    day({ type:'easy', title:'Easy Jog + Strides', km:4, pace:P.rec, description:'4 km very easy jog to keep legs moving. 4 × 10-sec strides at race pace to wake up the fast-twitch fibres.', structure:['4 km easy', '4 x 10-sec strides at 5:00/km with full recovery'] }),
+    day({ type:'easy', title:'Easy Jog', km:3, pace:P.rec, description:'3 km easy jog. No strides. Collect your race number if possible. Visualise the course.', structure:['3 km easy — thats it'] }),
     day({ type:'rest', title:'Rest — Final Preparation', description:'Rest. Feet up. Confirm logistics: travel, start time, bag drop. Eat carbs at every meal. Sleep 9 hours.', }),
     day({ type:'rest', title:'Rest — Race Eve', description:'Full rest. Final kit prep. Race strategy printed or memorised. Dinner: pasta or rice at 5pm — nothing heavy or unusual. In bed by 9pm.', exercises:['Kit check: bib, chip, shoes, socks, gels × 5, watch, electrolyte tabs, sunscreen'] }),
     day({ type:'recovery', title:'Morning Shakeout', km:2, pace:P.rec, description:'2 km very easy morning shake-out (if race start is afternoon). Otherwise full rest and extra sleep.', structure:['2 km easy walk/jog only', 'Dynamic warm-up 10 min before race start'] }),
-    day({ type:'race', title:'🏁 RACE DAY — Marathon', km:42.2, pace:'4:58–5:02/km', description:'You are ready. 26 weeks of preparation have come to this. Trust your training. Trust your pacing. Trust your body. You have done everything right. Now go run your race.', structure:['Start conservative — everyone goes out too fast in the first 5 km', 'Km 0–10: feel almost too easy (5:05–5:10/km) — it SHOULD feel easy', 'Km 10–21: settle into race pace (5:00–5:05/km)', 'Km 21–32: hold the pace — this is where the race is won or lost', 'Km 32–38: if you feel strong, push. If not, focus on form and breathe.', 'Km 38–42.2: give absolutely everything you have left', 'Nutrition: gel at km 8, 16, 24, 32, 37 + water at every station', 'Run your own race — ignore everyone else's pace', 'Smile at km 40 — you're almost there.', 'Enjoy every single kilometre. You earned every one of them.'], exercises:['Post-race: protein + carbs within 30 min', 'Walk for 10 min before stopping completely', 'Ice bath or cold water 15 min', 'Elevate legs 30 min', 'You did it.'] }),
+    day({ type:'race', title:'🏁 RACE DAY — Marathon', km:42.2, pace:'4:58–5:02/km', description:'You are ready. 26 weeks of preparation have come to this. Trust your training. Trust your pacing. Trust your body. You have done everything right. Now go run your race.', structure:['Start conservative — everyone goes out too fast in the first 5 km', 'Km 0–10: feel almost too easy (5:05–5:10/km) — it SHOULD feel easy', 'Km 10–21: settle into race pace (5:00–5:05/km)', 'Km 21–32: hold the pace — this is where the race is won or lost', 'Km 32–38: if you feel strong, push. If not, focus on form and breathe.', 'Km 38–42.2: give absolutely everything you have left', 'Nutrition: gel at km 8, 16, 24, 32, 37 + water at every station', 'Run your own race — ignore everyone else\'s pace', 'Smile at km 40 — you\'re almost there.', 'Enjoy every single kilometre. You earned every one of them.'], exercises:['Post-race: protein + carbs within 30 min', 'Walk for 10 min before stopping completely', 'Ice bath or cold water 15 min', 'Elevate legs 30 min', 'You did it.'] }),
   ],
 ]
 

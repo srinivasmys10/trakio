@@ -89,7 +89,7 @@ export type Progress = Record<string, boolean | string>
 
 export type SyncStatus = 'idle' | 'saving' | 'saved' | 'error'
 
-export type NavId = 'dashboard' | 'plan' | 'gym' | 'recovery' | 'nutrition' | 'food' | 'workout'
+export type NavId = 'dashboard' | 'plan' | 'gym' | 'recovery' | 'nutrition' | 'food' | 'workout' |'marathon'
 
 export interface NavItem {
   id: NavId
