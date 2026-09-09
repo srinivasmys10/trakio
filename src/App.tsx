@@ -17,6 +17,7 @@ import Recovery    from './pages/Recovery'
 import Nutrition   from './pages/Nutrition'
 import FoodPlanner     from './pages/FoodPlanner'
 import WorkoutPlanner from './pages/WorkoutPlanner'
+import MarathonPlan  from './pages/MarathonPlan'
 import type { Progress, SyncStatus, NavId, NavItem } from './types'
 
 // ─── Nav config ───────────────────────────────────────────────────────────────
@@ -29,6 +30,7 @@ const AUTH_NAV: NavItem[] = [
   { id: 'nutrition', label: 'Nutrition', icon: '🥗' },
   { id: 'food',      label: 'Meals',     icon: '🍽' },
   { id: 'workout',   label: 'Workout',   icon: '💪' },
+  { id: 'marathon',  label: 'Marathon',  icon: '🏁' },
 ]
 const MEALS_NAV_IDS: NavId[] = ['food', 'workout']
 
@@ -41,6 +43,7 @@ const NAV_TO_PATH: Record<NavId, string> = {
   nutrition: '/nutrition',
   food:      '/meals',
   workout:   '/workout',
+  marathon:  '/marathon',
 }
 
 const PATH_TO_NAV: Record<string, NavId> = Object.fromEntries(
@@ -90,15 +93,17 @@ function Shell({ nav, theme, onToggle, pct, completed, total, syncStatus, user, 
                       ? 'linear-gradient(135deg,#f59e0b,#ef4444)'
                       : activeId === 'workout'
                       ? 'linear-gradient(135deg,#a78bfa,#60a5fa)'
+                      : activeId === 'marathon'
+                      ? 'linear-gradient(135deg,#f43f5e,#fb923c)'
                       : 'linear-gradient(135deg,#4ade80,#22d3ee)',
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
                     fontSize: 17,
                   }}>
-                    {activeId === 'food' ? '🍽' : activeId === 'workout' ? '💪' : '🏃'}
+                    {activeId === 'food' ? '🍽' : activeId === 'workout' ? '💪' : activeId === 'marathon' ? '🏁' : '🏃'}
                   </div>
                   <div>
                     <div style={{ fontSize: 14, fontWeight: 800, letterSpacing: '-0.01em', lineHeight: 1.2, color: 'var(--text-primary)' }}>
-                      {activeId === 'food' ? 'Meal Planner' : activeId === 'workout' ? 'Workout Planner' : 'Training Hub'}
+                      {activeId === 'food' ? 'Meal Planner' : activeId === 'workout' ? 'Workout Planner' : activeId === 'marathon' ? 'Marathon Plan' : 'Training Hub'}
                     </div>
                     <SyncDot status={syncStatus} />
                   </div>
@@ -146,7 +151,7 @@ function Shell({ nav, theme, onToggle, pct, completed, total, syncStatus, user, 
           </div>
 
           {/* Progress bar — training sections only */}
-          {pct !== undefined && activeId !== 'food' && activeId !== 'workout' && (
+          {pct !== undefined && activeId !== 'food' && activeId !== 'workout' && activeId !== 'marathon' && (
             <div style={{ marginTop: 10, height: 3, background: 'var(--bg-track)', borderRadius: 2, overflow: 'hidden' }}>
               <div style={{ height: '100%', width: `${pct}%`, background: 'linear-gradient(90deg,var(--green),var(--blue))', borderRadius: 2, transition: 'width 0.6s' }} />
             </div>
@@ -187,10 +192,10 @@ function Shell({ nav, theme, onToggle, pct, completed, total, syncStatus, user, 
                   gap: 2, padding: '5px 4px 4px',
                   borderRadius: 10,
                   background: active
-                    ? item.id === 'workout' ? 'rgba(167,139,250,0.12)' : isMeals ? 'rgba(245,158,11,0.12)' : 'rgba(74,222,128,0.12)'
+                    ? item.id === 'workout' ? 'rgba(167,139,250,0.12)' : item.id === 'marathon' ? 'rgba(244,63,94,0.12)' : isMeals ? 'rgba(245,158,11,0.12)' : 'rgba(74,222,128,0.12)'
                     : 'transparent',
                   color: active
-                    ? item.id === 'workout' ? 'var(--purple)' : isMeals ? 'var(--amber)' : 'var(--green)'
+                    ? item.id === 'workout' ? 'var(--purple)' : item.id === 'marathon' ? '#f43f5e' : isMeals ? 'var(--amber)' : 'var(--green)'
                     : 'var(--text-muted)',
                   border: 'none', cursor: 'pointer', transition: 'all 0.18s',
                   minWidth: 44, maxWidth: 72,
@@ -288,6 +293,7 @@ function TrainingApp({ userId, user }: { userId: string; user: AuthUserShape }) 
         <Route path="/nutrition" element={<Nutrition />} />
         <Route path="/meals"     element={<FoodPlanner />} />
         <Route path="/workout"  element={<WorkoutPlanner />} />
+        <Route path="/marathon" element={<MarathonPlan />} />
         {/* Catch-all → dashboard */}
         <Route path="*"          element={<Dashboard progress={progress} />} />
       </Routes>
