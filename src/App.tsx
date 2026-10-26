@@ -22,15 +22,11 @@ import type { Progress, SyncStatus, NavId, NavItem } from './types'
 
 // ─── Nav config ───────────────────────────────────────────────────────────────
 
+// Hidden from nav but routes still work: dashboard, plan, gym, recovery, nutrition
 const AUTH_NAV: NavItem[] = [
-  { id: 'dashboard', label: 'Overview',  icon: '📊' },
-  { id: 'plan',      label: 'Plan',      icon: '📅' },
-  { id: 'gym',       label: 'Gym',       icon: '🏋️' },
-  { id: 'recovery',  label: 'Recovery',  icon: '🧘' },
-  { id: 'nutrition', label: 'Nutrition', icon: '🥗' },
-  { id: 'food',      label: 'Meals',     icon: '🍽' },
-  { id: 'workout',   label: 'Workout',   icon: '💪' },
-  { id: 'marathon',  label: 'Marathon',  icon: '🏁' },
+  { id: 'food',     label: 'Meals',    icon: '🍽' },
+  { id: 'workout',  label: 'Workout',  icon: '💪' },
+  { id: 'marathon', label: 'Marathon', icon: '🏁' },
 ]
 const MEALS_NAV_IDS: NavId[] = ['food', 'workout']
 
