@@ -22,15 +22,11 @@ import type { Progress, SyncStatus, NavId, NavItem } from './types'
 
 // ─── Nav config ───────────────────────────────────────────────────────────────
 
+// Hidden from nav but routes still work: dashboard, plan, gym, recovery, nutrition
 const AUTH_NAV: NavItem[] = [
-  { id: 'dashboard', label: 'Overview',  icon: '📊' },
-  { id: 'plan',      label: 'Plan',      icon: '📅' },
-  { id: 'gym',       label: 'Gym',       icon: '🏋️' },
-  { id: 'recovery',  label: 'Recovery',  icon: '🧘' },
-  { id: 'nutrition', label: 'Nutrition', icon: '🥗' },
-  { id: 'food',      label: 'Meals',     icon: '🍽' },
-  { id: 'workout',   label: 'Workout',   icon: '💪' },
-  { id: 'marathon',  label: 'Marathon',  icon: '🏁' },
+  { id: 'food',     label: 'Meals',    icon: '🍽' },
+  { id: 'workout',  label: 'Workout',  icon: '💪' },
+  { id: 'marathon', label: 'Marathon', icon: '🏁' },
 ]
 const MEALS_NAV_IDS: NavId[] = ['food', 'workout']
 
@@ -64,7 +60,7 @@ interface ShellProps {
   children:    React.ReactNode
 }
 
-function Shell({ nav, theme, onToggle, pct, completed, total, syncStatus, user, children }: ShellProps) {
+function Shell({ nav, theme, onToggle, syncStatus, user, children }: ShellProps) {
   const navigate  = useNavigate()
   const { pathname } = useLocation()
   const activeId = PATH_TO_NAV[pathname] ?? 'dashboard'
@@ -131,12 +127,12 @@ function Shell({ nav, theme, onToggle, pct, completed, total, syncStatus, user, 
             {/* ── Right: controls ── */}
             <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0 }}>
               <ThemeToggle theme={theme} onToggle={onToggle} />
-              {pct !== undefined && (
+              {/*pct !== undefined && (
                 <div style={{ textAlign: 'right' }}>
                   <div style={{ fontSize: 20, fontWeight: 800, color: 'var(--green)', lineHeight: 1 }}>{pct}%</div>
                   <div style={{ fontSize: 10, color: 'var(--text-muted)', marginTop: 1 }}>{completed}/{total}</div>
                 </div>
-              )}
+              )*/}
               {user
                 ? <UserMenu user={user} onSignOut={signOut} />
                 : (
@@ -151,11 +147,11 @@ function Shell({ nav, theme, onToggle, pct, completed, total, syncStatus, user, 
           </div>
 
           {/* Progress bar — training sections only */}
-          {pct !== undefined && activeId !== 'food' && activeId !== 'workout' && activeId !== 'marathon' && (
+          {/*pct !== undefined && activeId !== 'food' && activeId !== 'workout' && activeId !== 'marathon' && (
             <div style={{ marginTop: 10, height: 3, background: 'var(--bg-track)', borderRadius: 2, overflow: 'hidden' }}>
               <div style={{ height: '100%', width: `${pct}%`, background: 'linear-gradient(90deg,var(--green),var(--blue))', borderRadius: 2, transition: 'width 0.6s' }} />
             </div>
-          )}
+          )*/}
         </div>
       </header>
 
@@ -172,18 +168,18 @@ function Shell({ nav, theme, onToggle, pct, completed, total, syncStatus, user, 
         padding: '4px 6px max(10px,env(safe-area-inset-bottom))',
         zIndex: 100, backdropFilter: 'blur(16px)',
       }}>
-        {nav.map((item, idx) => {
+        {nav.map((item) => {
           const active  = activeId === item.id
           const isMeals = MEALS_NAV_IDS.includes(item.id)
-          const prev    = nav[idx - 1]
-          const sectionBreak = isMeals && prev && !MEALS_NAV_IDS.includes(prev.id)
+          //const prev    = nav[idx - 1]
+          //const sectionBreak = isMeals && prev && !MEALS_NAV_IDS.includes(prev.id)
 
           return (
-            <div key={item.id} style={{ display: 'flex', alignItems: 'center', flex: sectionBreak ? '0 0 auto' : 1 }}>
+            <div key={item.id} style={{ display: 'flex', alignItems: 'center', flex: 1 }}>
               {/* Vertical divider between training and meals sections */}
-              {sectionBreak && (
+              {/*sectionBreak && (
                 <div style={{ width: 1, height: 36, background: 'var(--border)', margin: '0 2px', flexShrink: 0 }} />
-              )}
+              )*/}
               <button
                 onClick={() => navigate(NAV_TO_PATH[item.id])}
                 style={{
@@ -198,7 +194,7 @@ function Shell({ nav, theme, onToggle, pct, completed, total, syncStatus, user, 
                     ? item.id === 'workout' ? 'var(--purple)' : item.id === 'marathon' ? '#f43f5e' : isMeals ? 'var(--amber)' : 'var(--green)'
                     : 'var(--text-muted)',
                   border: 'none', cursor: 'pointer', transition: 'all 0.18s',
-                  minWidth: 44, maxWidth: 72,
+                  minWidth: 44,
                 }}
               >
                 <span style={{ fontSize: 20, lineHeight: '22px', display: 'block', textAlign: 'center' }}>{item.icon}</span>
@@ -286,7 +282,7 @@ function TrainingApp({ userId, user }: { userId: string; user: AuthUserShape }) 
       syncStatus={syncStatus} user={user}
     >
       <Routes>
-        <Route path="/"          element={<Dashboard progress={progress} />} />
+        <Route path="/"          element={<WorkoutPlanner />} />
         <Route path="/plan"      element={<Plan progress={progress} gymSplits={gymSplits} onToggle={handleToggle} onSaveNote={handleSaveNote} onSaveSetting={handleSaveSetting} onRefetch={refetchGym} />} />
         <Route path="/gym"       element={<Gym gymSplits={gymSplits} gymLoading={gymLoading} gymError={gymError} onRefetch={refetchGym} />} />
         <Route path="/recovery"  element={<Recovery />} />
