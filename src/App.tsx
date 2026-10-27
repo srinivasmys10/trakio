@@ -60,7 +60,7 @@ interface ShellProps {
   children:    React.ReactNode
 }
 
-function Shell({ nav, theme, onToggle, pct, completed, total, syncStatus, user, children }: ShellProps) {
+function Shell({ nav, theme, onToggle, syncStatus, user, children }: ShellProps) {
   const navigate  = useNavigate()
   const { pathname } = useLocation()
   const activeId = PATH_TO_NAV[pathname] ?? 'dashboard'
@@ -168,7 +168,7 @@ function Shell({ nav, theme, onToggle, pct, completed, total, syncStatus, user, 
         padding: '4px 6px max(10px,env(safe-area-inset-bottom))',
         zIndex: 100, backdropFilter: 'blur(16px)',
       }}>
-        {nav.map((item, idx) => {
+        {nav.map((item) => {
           const active  = activeId === item.id
           const isMeals = MEALS_NAV_IDS.includes(item.id)
           //const prev    = nav[idx - 1]
