@@ -3,6 +3,7 @@ import {
   loadWeekWorkout, loadDayCompletions,
   addWorkoutSlot, toggleSlotCompletion,
   setDayCompletion, updateWorkoutSlot, removeWorkoutSlot,
+  copyWorkoutSlots, clearWorkoutDay,
 } from '../lib/workoutPlan'
 import type { WorkoutSlot, DayCompletion, Weekday } from '../types'
 
@@ -17,6 +18,8 @@ export interface UseWorkoutPlanResult {
   markDayDone:     (weekStart: string, weekday: Weekday, completed: boolean) => Promise<void>
   updateSlot:      (id: number, fields: { custom_sets?: number | null; custom_reps?: string | null; notes?: string }) => Promise<void>
   removeSlot:      (id: number) => Promise<void>
+  copySlots:       (slotIds: number[], targetWeekStart: string, targetWeekday: Weekday) => Promise<number>
+  clearDay:        (weekStart: string, weekday: Weekday) => Promise<void>
   refetch:         () => Promise<void>
 }
 
@@ -128,9 +131,36 @@ export function useWorkoutPlan(weekStart: string): UseWorkoutPlanResult {
     } finally { setSaving(false) }
   }, [])
 
+  // Copy exercises to another day (possibly in another week, e.g. "today")
+  const copySlots = useCallback(async (slotIds: number[], targetWeekStart: string, targetWeekday: Weekday) => {
+    const source = slots.filter(s => slotIds.includes(s.id)).sort((a, b) => a.sort_order - b.sort_order)
+    if (source.length === 0) return 0
+    setSaving(true)
+    try {
+      const created = await copyWorkoutSlots(source, targetWeekStart, targetWeekday)
+      // New incomplete exercises mean the target day is no longer fully done
+      await setDayCompletion(targetWeekStart, targetWeekday, false)
+      if (targetWeekStart === weekStart) {
+        setSlots(prev => [...prev, ...created])
+        setDayCompletions(prev => prev.filter(d => !(d.weekday === targetWeekday && d.week_start === targetWeekStart)))
+      }
+      return created.length
+    } finally { setSaving(false) }
+  }, [slots, weekStart])
+
+  // Delete all exercises for a day
+  const clearDay = useCallback(async (ws: string, weekday: Weekday) => {
+    setSaving(true)
+    try {
+      await clearWorkoutDay(ws, weekday)
+      setSlots(prev => prev.filter(s => !(s.weekday === weekday && s.week_start === ws)))
+      setDayCompletions(prev => prev.filter(d => !(d.weekday === weekday && d.week_start === ws)))
+    } finally { setSaving(false) }
+  }, [])
+
   return {
     slots, dayCompletions, loading, error, saving,
-    addSlot, toggleCompleted, markDayDone, updateSlot, removeSlot,
+    addSlot, toggleCompleted, markDayDone, updateSlot, removeSlot, copySlots, clearDay,
     refetch: fetch,
   }
 }

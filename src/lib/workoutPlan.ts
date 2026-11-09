@@ -107,6 +107,53 @@ export async function addWorkoutSlot(slot: Omit<NewWorkoutSlot, 'sort_order'>): 
   return rowToSlot(data as unknown as WorkoutRow)
 }
 
+// ─── Copy slots to another day / clear a day ─────────────────────────────────
+
+/** Copies the given slots to a target week + weekday. Copies start uncompleted. */
+export async function copyWorkoutSlots(
+  source: WorkoutSlot[],
+  targetWeekStart: string,
+  targetWeekday: Weekday
+): Promise<WorkoutSlot[]> {
+  if (source.length === 0) return []
+  const userId = await getAuthUserId()
+  const { count } = await supabase
+    .from('workout_plans')
+    .select('*', { count: 'exact', head: true })
+    .eq('user_id', userId).eq('week_start', targetWeekStart).eq('weekday', targetWeekday)
+
+  const base = count ?? 0
+  const rows = source.map((s, i) => ({
+    user_id: userId, week_start: targetWeekStart, weekday: targetWeekday,
+    exercise_id: s.exercise_id, custom_sets: s.custom_sets, custom_reps: s.custom_reps,
+    notes: s.notes, sort_order: base + i + 1, completed: false,
+  }))
+
+  const { data, error } = await supabase
+    .from('workout_plans')
+    .insert(rows)
+    .select(`
+      id, user_id, week_start, weekday, exercise_id, custom_sets, custom_reps,
+      notes, sort_order, completed, created_at,
+      exercise_library ( id, name, description, exercise_type, impact_areas,
+                         default_sets, default_reps, audio_url, sort_order, created_at )
+    `)
+
+  if (error) throw error
+  return ((data ?? []) as unknown as WorkoutRow[]).map(rowToSlot)
+}
+
+/** Deletes every exercise on a day and clears that day's completion mark. */
+export async function clearWorkoutDay(weekStart: string, weekday: Weekday): Promise<void> {
+  const userId = await getAuthUserId()
+  const { error } = await supabase
+    .from('workout_plans')
+    .delete()
+    .eq('user_id', userId).eq('week_start', weekStart).eq('weekday', weekday)
+  if (error) throw error
+  await setDayCompletion(weekStart, weekday, false)
+}
+
 // ─── Toggle exercise completion ───────────────────────────────────────────────
 
 export async function toggleSlotCompletion(id: number, completed: boolean): Promise<void> {

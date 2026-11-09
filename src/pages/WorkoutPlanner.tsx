@@ -1,4 +1,4 @@
-import { useState, useRef, useCallback, type FormEvent } from 'react'
+import { useState, useRef, useCallback, useEffect, type FormEvent } from 'react'
 import WeekPicker,     { formatWeekRange } from '../components/WeekPicker'
 import WorkoutCalendar from '../components/WorkoutCalendar'
 import AudioRecorder from '../components/AudioRecorder'
@@ -33,6 +33,45 @@ function dayDate(weekStart: string, weekday: string): string {
   const [y,m,d] = weekStart.split('-').map(Number)
   const dt = new Date(y, m-1, d + (_DOW[weekday] ?? 0))
   return `${dt.getDate()} ${_MO[dt.getMonth()]}`
+}
+
+// ─── Group by impacted muscle area ────────────────────────────────────────────
+// An exercise is filed under its FIRST impact area (its primary muscle), so it
+// appears once. Common muscles sort in a sensible body order; others follow A–Z;
+// exercises with no tags go last.
+
+const AREA_ORDER = [
+  'chest', 'shoulders', 'delts', 'back', 'lats', 'traps', 'biceps', 'triceps', 'forearms',
+  'core', 'abs', 'obliques', 'lower back', 'glutes', 'quads', 'hamstrings', 'calves', 'hip flexors',
+]
+
+const areaKey   = (ex: ExerciseLibraryItem) => (ex.impact_areas[0] ?? '').trim().toLowerCase()
+const areaLabel = (k: string) => k ? k.replace(/\b\w/g, c => c.toUpperCase()) : 'Untagged'
+
+function groupByArea<T>(items: T[], get: (t: T) => ExerciseLibraryItem): { key: string; label: string; items: T[] }[] {
+  const map = new Map<string, T[]>()
+  for (const it of items) {
+    const k = areaKey(get(it))
+    map.set(k, [...(map.get(k) ?? []), it])
+  }
+  const rank = (k: string) => { const i = AREA_ORDER.indexOf(k); return i === -1 ? AREA_ORDER.length : i }
+  return [...map.entries()]
+    .sort(([a], [b]) => {
+      if (!a) return 1
+      if (!b) return -1
+      return rank(a) - rank(b) || a.localeCompare(b)
+    })
+    .map(([key, items]) => ({ key, label: areaLabel(key), items }))
+}
+
+function AreaHeader({ label, count, size = 10 }: { label: string; count: number; size?: number }) {
+  return (
+    <div style={{ display: 'flex', alignItems: 'center', gap: 6, margin: '8px 2px 5px' }}>
+      <span style={{ fontSize: size, fontWeight: 800, color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>{label}</span>
+      <span style={{ fontSize: 10, color: 'var(--text-muted)' }}>{count}</span>
+      <div style={{ flex: 1, height: 1, background: 'var(--border)' }} />
+    </div>
+  )
 }
 
 // ─── Shared helpers ───────────────────────────────────────────────────────────
@@ -175,6 +214,49 @@ function LibraryPanel({ exercises, saving, onAdd, onUpdate, onRemove }: {
     return typeOk && searchOk
   })
 
+  const renderEx = (ex: ExerciseLibraryItem) => {
+    const info = EXERCISE_TYPE_LABELS[ex.exercise_type]
+    const open = expanded === ex.id
+    return (
+      <div key={ex.id} style={{ background: info.bg, border: `1px solid ${info.border}`, borderRadius: 10, marginBottom: 7, overflow: 'hidden' }}>
+        <div onClick={() => setExpanded(open ? null : ex.id)} style={{ padding: '10px 12px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 10 }}>
+          <span style={{ fontSize: 16, flexShrink: 0 }}>{info.icon}</span>
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <div style={{ fontSize: 13, fontWeight: 700, color: 'var(--text-primary)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{ex.name}</div>
+            <div style={{ display: 'flex', gap: 6, marginTop: 2, flexWrap: 'wrap' }}>
+              <span style={{ fontSize: 10, fontWeight: 700, color: info.color, textTransform: 'uppercase', letterSpacing: '0.06em' }}>{info.label}</span>
+              <span style={{ fontSize: 10, color: 'var(--text-muted)' }}>{ex.default_sets} sets · {ex.default_reps}</span>
+              {ex.audio_url && <span style={{ fontSize: 10, color: 'var(--amber)' }}>🎙 audio</span>}
+            </div>
+          </div>
+          <div style={{ display: 'flex', gap: 5, flexShrink: 0 }}>
+            <button onClick={e => { e.stopPropagation(); setEditItem(ex); setShowForm(false) }} style={{ background: 'rgba(96,165,250,0.1)', border: '1px solid rgba(96,165,250,0.3)', borderRadius: 6, color: 'var(--blue)', fontSize: 11, padding: '3px 8px', cursor: 'pointer' }}>✏</button>
+            <button onClick={async e => { e.stopPropagation(); if (window.confirm(`Delete "${ex.name}"? This removes it from all workout plans.`)) await onRemove(ex.id, ex.audio_url) }} style={{ background: 'rgba(248,113,113,0.1)', border: '1px solid rgba(248,113,113,0.25)', borderRadius: 6, color: 'var(--red)', fontSize: 11, padding: '3px 8px', cursor: 'pointer' }}>🗑</button>
+            <span style={{ color: 'var(--text-muted)', fontSize: 14, lineHeight: '24px' }}>{open ? '▲' : '▼'}</span>
+          </div>
+        </div>
+        {open && (
+          <div style={{ borderTop: `1px solid ${info.border}`, padding: '12px 14px', display: 'flex', flexDirection: 'column', gap: 8 }}>
+            {ex.description && <p style={{ fontSize: 13, color: 'var(--text-secondary)', lineHeight: 1.55 }}>{ex.description}</p>}
+            {ex.impact_areas.length > 0 && (
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 5 }}>
+                {ex.impact_areas.map(a => (
+                  <span key={a} style={{ fontSize: 10, fontWeight: 600, color: info.color, background: `${info.color}18`, border: `1px solid ${info.border}`, borderRadius: 5, padding: '2px 7px' }}>{a}</span>
+                ))}
+              </div>
+            )}
+            {ex.audio_url && (
+              <div>
+                <div style={{ fontSize: 10, fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.07em', marginBottom: 4 }}>Audio Cue</div>
+                <audio src={ex.audio_url} controls style={{ width: '100%', height: 32 }} />
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+    )
+  }
+
   return (
     <div>
       {/* Search */}
@@ -214,97 +296,122 @@ function LibraryPanel({ exercises, saving, onAdd, onUpdate, onRemove }: {
 
       <div style={{ fontSize: 12, color: 'var(--text-muted)', marginBottom: 8 }}>{visible.length} exercise{visible.length !== 1 ? 's' : ''}</div>
 
-      {visible.map(ex => {
-        const info = EXERCISE_TYPE_LABELS[ex.exercise_type]
-        const open = expanded === ex.id
-        return (
-          <div key={ex.id} style={{ background: info.bg, border: `1px solid ${info.border}`, borderRadius: 10, marginBottom: 7, overflow: 'hidden' }}>
-            <div onClick={() => setExpanded(open ? null : ex.id)} style={{ padding: '10px 12px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 10 }}>
-              <span style={{ fontSize: 16, flexShrink: 0 }}>{info.icon}</span>
-              <div style={{ flex: 1, minWidth: 0 }}>
-                <div style={{ fontSize: 13, fontWeight: 700, color: 'var(--text-primary)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{ex.name}</div>
-                <div style={{ display: 'flex', gap: 6, marginTop: 2, flexWrap: 'wrap' }}>
-                  <span style={{ fontSize: 10, fontWeight: 700, color: info.color, textTransform: 'uppercase', letterSpacing: '0.06em' }}>{info.label}</span>
-                  <span style={{ fontSize: 10, color: 'var(--text-muted)' }}>{ex.default_sets} sets · {ex.default_reps}</span>
-                  {ex.audio_url && <span style={{ fontSize: 10, color: 'var(--amber)' }}>🎙 audio</span>}
-                </div>
-              </div>
-              <div style={{ display: 'flex', gap: 5, flexShrink: 0 }}>
-                <button onClick={e => { e.stopPropagation(); setEditItem(ex); setShowForm(false) }} style={{ background: 'rgba(96,165,250,0.1)', border: '1px solid rgba(96,165,250,0.3)', borderRadius: 6, color: 'var(--blue)', fontSize: 11, padding: '3px 8px', cursor: 'pointer' }}>✏</button>
-                <button onClick={async e => { e.stopPropagation(); if (window.confirm(`Delete "${ex.name}"? This removes it from all workout plans.`)) await onRemove(ex.id, ex.audio_url) }} style={{ background: 'rgba(248,113,113,0.1)', border: '1px solid rgba(248,113,113,0.25)', borderRadius: 6, color: 'var(--red)', fontSize: 11, padding: '3px 8px', cursor: 'pointer' }}>🗑</button>
-                <span style={{ color: 'var(--text-muted)', fontSize: 14, lineHeight: '24px' }}>{open ? '▲' : '▼'}</span>
-              </div>
-            </div>
-            {open && (
-              <div style={{ borderTop: `1px solid ${info.border}`, padding: '12px 14px', display: 'flex', flexDirection: 'column', gap: 8 }}>
-                {ex.description && <p style={{ fontSize: 13, color: 'var(--text-secondary)', lineHeight: 1.55 }}>{ex.description}</p>}
-                {ex.impact_areas.length > 0 && (
-                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: 5 }}>
-                    {ex.impact_areas.map(a => (
-                      <span key={a} style={{ fontSize: 10, fontWeight: 600, color: info.color, background: `${info.color}18`, border: `1px solid ${info.border}`, borderRadius: 5, padding: '2px 7px' }}>{a}</span>
-                    ))}
-                  </div>
-                )}
-                {ex.audio_url && (
-                  <div>
-                    <div style={{ fontSize: 10, fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.07em', marginBottom: 4 }}>Audio Cue</div>
-                    <audio src={ex.audio_url} controls style={{ width: '100%', height: 32 }} />
-                  </div>
-                )}
-              </div>
-            )}
-          </div>
-        )
-      })}
+
+      {groupByArea(visible, ex => ex).map(g => (
+        <div key={g.key || 'untagged'} style={{ marginBottom: 8 }}>
+          <AreaHeader label={g.label} count={g.items.length} size={11} />
+          {g.items.map(renderEx)}
+        </div>
+      ))}
     </div>
   )
 }
 
 // ─── Day workout card ─────────────────────────────────────────────────────────
 
-function DayWorkout({ day, slots, exercises, saving, weekStart, dayDone, onAdd, onRemove, onToggle, onDayToggle }: {
-  day:          Weekday
-  slots:        import('../types').WorkoutSlot[]
-  exercises:    ExerciseLibraryItem[]
-  saving:       boolean
-  weekStart:    string
-  dayDone:      boolean
-  onAdd:        (exerciseId: number) => Promise<void>
-  onRemove:     (id: number) => Promise<void>
-  onToggle:     (id: number, completed: boolean) => Promise<void>
-  onDayToggle:  (completed: boolean) => Promise<void>
+const smallBtn = (color: string, bg: string, border: string): React.CSSProperties => ({
+  padding: '4px 10px', borderRadius: 7, fontSize: 11, fontWeight: 700,
+  cursor: 'pointer', fontFamily: 'inherit', color, background: bg, border: `1px solid ${border}`,
+})
+
+function DayWorkout({
+  day, slots, exercises, saving, weekStart, dayDone, isToday, expanded, today,
+  onToggleExpand, onAdd, onRemove, onToggle, onDayToggle, onCopy, onClearDay,
+}: {
+  day:            Weekday
+  slots:          import('../types').WorkoutSlot[]
+  exercises:      ExerciseLibraryItem[]
+  saving:         boolean
+  weekStart:      string
+  dayDone:        boolean
+  isToday:        boolean
+  expanded:       boolean
+  today:          { weekStart: string; weekday: Weekday }
+  onToggleExpand: () => void
+  onAdd:          (exerciseId: number) => Promise<void>
+  onRemove:       (id: number) => Promise<void>
+  onToggle:       (id: number, completed: boolean) => Promise<void>
+  onDayToggle:    (completed: boolean) => Promise<void>
+  onCopy:         (slotIds: number[], targetWeekStart: string, targetWeekday: Weekday) => Promise<number>
+  onClearDay:     () => Promise<void>
 }) {
   const [showPicker, setShowPicker] = useState(false)
   const [searchQ,    setSearchQ]    = useState('')
+  const [selectedRaw, setSelected]  = useState<Set<number>>(new Set())
+  const [notice,     setNotice]     = useState<{ text: string; error?: boolean } | null>(null)
+
+  useEffect(() => {
+    if (!notice) return
+    const t = setTimeout(() => setNotice(null), 2800)
+    return () => clearTimeout(t)
+  }, [notice])
 
   const filtered = exercises.filter(ex =>
-    !searchQ || ex.name.toLowerCase().includes(searchQ.toLowerCase()) || ex.exercise_type.includes(searchQ.toLowerCase())
+    !searchQ || ex.name.toLowerCase().includes(searchQ.toLowerCase()) || ex.exercise_type.includes(searchQ.toLowerCase()) || ex.impact_areas.some(a => a.toLowerCase().includes(searchQ.toLowerCase()))
   )
 
-  const typeGroups = EXERCISE_TYPES.reduce<Record<string, ExerciseLibraryItem[]>>((acc, et) => {
-    const group = filtered.filter(ex => ex.exercise_type === et)
-    if (group.length > 0) acc[et] = group
-    return acc
-  }, {})
+  const pickerGroups = groupByArea(filtered, ex => ex)
 
+  // Day's exercises organised by impacted muscle area
+  const slotGroups = groupByArea(slots, sl => sl.exercise)
+
+  // Only count selections for slots that still exist (removed / cleared ones drop out)
+  const selected = new Set([...selectedRaw].filter(id => slots.some(s => s.id === id)))
   const completedCount = slots.filter(s => s.completed).length
+  const selCount       = selected.size
+  const isTodayTarget  = today.weekStart === weekStart && today.weekday === day
+
+  const toggleSelect = (id: number) =>
+    setSelected(prev => { const n = new Set(prev); if (n.has(id)) n.delete(id); else n.add(id); return n })
+
+  const doCopy = async (targetWeekStart: string, targetWeekday: Weekday, label: string) => {
+    const ids = [...selected]
+    try {
+      const n = await onCopy(ids, targetWeekStart, targetWeekday)
+      setNotice({ text: `Copied ${n} exercise${n !== 1 ? 's' : ''} to ${label}` })
+      setSelected(new Set())
+    } catch (e) {
+      setNotice({ text: e instanceof Error ? e.message : 'Copy failed', error: true })
+    }
+  }
+
+  const doClear = async () => {
+    if (!window.confirm(`Delete all ${slots.length} exercise${slots.length !== 1 ? 's' : ''} on ${day}?`)) return
+    try { await onClearDay(); setSelected(new Set()) }
+    catch (e) { setNotice({ text: e instanceof Error ? e.message : 'Delete failed', error: true }) }
+  }
+
+  const accent = dayDone ? 'var(--green)' : isToday ? 'var(--blue)' : 'var(--text-secondary)'
 
   return (
-    <div style={{ marginBottom: 20 }}>
-      {/* Day header */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
-        <div style={{ fontSize: 13, fontWeight: 700, color: dayDone ? 'var(--green)' : 'var(--text-secondary)' }}>{day}</div>
+    <div style={{ marginBottom: expanded ? 20 : 8 }}>
+      {/* Day header — tap anywhere to collapse / expand */}
+      <div
+        onClick={onToggleExpand}
+        role="button"
+        aria-expanded={expanded}
+        style={{
+          display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: 8, marginBottom: expanded ? 8 : 0,
+          cursor: 'pointer', padding: '8px 10px', borderRadius: 10,
+          background: 'var(--surface)',
+          border: `1px solid ${dayDone ? 'rgba(74,222,128,0.35)' : isToday ? 'rgba(96,165,250,0.45)' : 'var(--border)'}`,
+        }}
+      >
+        <span style={{ fontSize: 10, color: 'var(--text-muted)', width: 10, flexShrink: 0 }}>{expanded ? '▼' : '▶'}</span>
+        <div style={{ fontSize: 13, fontWeight: 700, color: accent }}>{day}</div>
         <div style={{ fontSize: 11, color: 'var(--text-muted)', fontFamily: 'var(--font-mono)' }}>{dayDate(weekStart, day)}</div>
-        {/* Day completion badge */}
+        {isToday && (
+          <span style={{ fontSize: 9, fontWeight: 800, color: 'var(--blue)', background: 'rgba(96,165,250,0.12)', border: '1px solid rgba(96,165,250,0.35)', borderRadius: 5, padding: '1px 6px', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Today</span>
+        )}
         {slots.length > 0 && (
           <button
-            onClick={() => onDayToggle(!dayDone)}
+            onClick={e => { e.stopPropagation(); void onDayToggle(!dayDone) }}
             disabled={saving}
             style={{
               display: 'flex', alignItems: 'center', gap: 4,
               padding: '2px 8px', borderRadius: 20, border: 'none', cursor: 'pointer',
               fontSize: 10, fontWeight: 700, transition: 'all 0.2s',
-              background: dayDone ? 'rgba(74,222,128,0.15)' : 'var(--surface)',
+              background: dayDone ? 'rgba(74,222,128,0.15)' : 'var(--bg-input)',
               color: dayDone ? 'var(--green)' : 'var(--text-muted)',
               outline: dayDone ? '1px solid rgba(74,222,128,0.4)' : '1px solid var(--border)',
             }}
@@ -312,91 +419,173 @@ function DayWorkout({ day, slots, exercises, saving, weekStart, dayDone, onAdd, 
             {dayDone ? '✓ Done' : `${completedCount}/${slots.length}`}
           </button>
         )}
-        <div style={{ flex: 1, height: 1, background: dayDone ? 'rgba(74,222,128,0.3)' : 'var(--border)', transition: 'background 0.3s' }} />
+        <div style={{ flex: 1 }} />
+        {/* When collapsed, show which areas the day hits */}
         <span style={{ fontSize: 11, color: 'var(--text-muted)' }}>{slots.length} exercise{slots.length !== 1 ? 's' : ''}</span>
+        {/* Collapsed: show the muscle areas the day works */}
+        {!expanded && slotGroups.length > 0 && (
+          <div style={{ flexBasis: '100%', fontSize: 11, color: 'var(--text-muted)', paddingLeft: 18, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+            {slotGroups.map(g => g.label).join(' · ')}
+          </div>
+        )}
       </div>
 
-      {/* Exercise slots */}
-      {slots.map(slot => {
-        const info = EXERCISE_TYPE_LABELS[slot.exercise.exercise_type]
-        const done = slot.completed
-        return (
-          <div key={slot.id} style={{
-            background: done ? 'rgba(74,222,128,0.06)' : info.bg,
-            border: `1px solid ${done ? 'rgba(74,222,128,0.35)' : info.border}`,
-            borderRadius: 9, padding: '10px 12px', marginBottom: 6,
-            display: 'flex', alignItems: 'flex-start', gap: 8,
-            opacity: done ? 0.85 : 1, transition: 'all 0.2s',
-          }}>
-            {/* Checkbox */}
-            <button
-              onClick={() => onToggle(slot.id, !done)}
-              disabled={saving}
-              aria-label={done ? 'Mark incomplete' : 'Mark complete'}
-              style={{
-                flexShrink: 0, marginTop: 1,
-                width: 22, height: 22, borderRadius: 6,
-                border: `2px solid ${done ? 'var(--green)' : info.border}`,
-                background: done ? 'rgba(74,222,128,0.2)' : 'transparent',
-                cursor: 'pointer', display: 'flex', alignItems: 'center',
-                justifyContent: 'center', transition: 'all 0.18s',
-              }}
-            >
-              {done && <span style={{ color: 'var(--green)', fontSize: 12, fontWeight: 700, lineHeight: 1 }}>✓</span>}
-            </button>
-
-            <div style={{ flex: 1, minWidth: 0 }}>
-              <div style={{
-                fontSize: 13, fontWeight: 700,
-                color: done ? 'var(--text-muted)' : 'var(--text-primary)',
-                textDecoration: done ? 'line-through' : 'none',
-                transition: 'all 0.2s',
-              }}>
-                {slot.exercise.name}
-              </div>
-              <div style={{ fontSize: 11, color: done ? 'var(--text-muted)' : info.color, fontWeight: 600, marginTop: 2 }}>
-                {slot.custom_sets ?? slot.exercise.default_sets} sets · {slot.custom_reps ?? slot.exercise.default_reps}
-              </div>
-              {slot.exercise.impact_areas.length > 0 && (
-                <div style={{ fontSize: 10, color: 'var(--text-muted)', marginTop: 3 }}>
-                  {slot.exercise.impact_areas.slice(0, 3).join(' · ')}
-                </div>
-              )}
+      {expanded && (
+        <>
+          {/* Day toolbar: select all / delete all */}
+          {slots.length > 0 && (
+            <div style={{ display: 'flex', gap: 6, alignItems: 'center', marginBottom: 8, flexWrap: 'wrap' }}>
+              <span style={{ fontSize: 10, color: 'var(--text-muted)' }}>Tap an exercise to select it</span>
+              <div style={{ flex: 1 }} />
+              <button
+                onClick={() => setSelected(selCount === slots.length ? new Set() : new Set(slots.map(s => s.id)))}
+                style={smallBtn('var(--text-secondary)', 'var(--bg-input)', 'var(--border)')}
+              >
+                {selCount === slots.length ? 'Deselect all' : 'Select all'}
+              </button>
+              <button
+                onClick={() => void doClear()}
+                disabled={saving}
+                style={smallBtn('var(--red)', 'rgba(248,113,113,0.08)', 'rgba(248,113,113,0.3)')}
+              >
+                🗑 Delete all
+              </button>
             </div>
+          )}
 
-            {/* Remove button */}
-            <button onClick={() => onRemove(slot.id)} disabled={saving} style={{ background: 'rgba(248,113,113,0.1)', border: '1px solid rgba(248,113,113,0.25)', borderRadius: 6, color: 'var(--red)', fontSize: 12, width: 26, height: 26, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>×</button>
-          </div>
-        )
-      })}
+          {/* Selection action bar */}
+          {selCount > 0 && (
+            <div style={{ background: 'rgba(96,165,250,0.07)', border: '1px solid rgba(96,165,250,0.35)', borderRadius: 10, padding: 10, marginBottom: 10 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8, flexWrap: 'wrap' }}>
+                <span style={{ fontSize: 12, fontWeight: 700, color: 'var(--blue)' }}>{selCount} selected</span>
+                <div style={{ flex: 1 }} />
+                {!isTodayTarget && (
+                  <button
+                    onClick={() => void doCopy(today.weekStart, today.weekday, 'today')}
+                    disabled={saving}
+                    style={{ ...smallBtn('var(--bg)', 'var(--blue)', 'var(--blue)'), padding: '5px 12px' }}
+                  >
+                    📋 Copy to today
+                  </button>
+                )}
+                <button onClick={() => setSelected(new Set())} style={smallBtn('var(--text-muted)', 'transparent', 'var(--border)')}>Clear</button>
+              </div>
+              <div style={{ fontSize: 10, fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 5 }}>Copy to…</div>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 5 }}>
+                {WEEKDAYS.filter(d => d !== day).map(d => (
+                  <button
+                    key={d}
+                    onClick={() => void doCopy(weekStart, d, d)}
+                    disabled={saving}
+                    style={smallBtn('var(--text-primary)', 'var(--bg-input)', 'var(--border)')}
+                  >
+                    {d.slice(0, 3)}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
 
-      {/* Add exercise picker */}
-      {!showPicker ? (
-        <button onClick={() => setShowPicker(true)} style={{ width: '100%', padding: '7px 12px', borderRadius: 9, fontSize: 12, fontWeight: 600, cursor: 'pointer', textAlign: 'left', border: '1.5px dashed rgba(74,222,128,0.4)', background: 'rgba(74,222,128,0.05)', color: 'var(--green)', fontFamily: 'inherit', display: 'flex', alignItems: 'center', gap: 6 }}>
-          💪 Add exercise
-        </button>
-      ) : (
-        <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 10, padding: 12 }}>
-          <input type="text" value={searchQ} onChange={e => setSearchQ(e.target.value)} placeholder="Search exercises…" style={{ ...fs(), marginBottom: 10 }} autoFocus />
-          <div style={{ maxHeight: 280, overflowY: 'auto' }}>
-            {Object.entries(typeGroups).map(([et, exList]) => {
-              const info = EXERCISE_TYPE_LABELS[et as ExerciseType]
-              return (
-                <div key={et} style={{ marginBottom: 10 }}>
-                  <div style={{ fontSize: 10, fontWeight: 700, color: info.color, textTransform: 'uppercase', letterSpacing: '0.07em', marginBottom: 5 }}>{info.icon} {info.label}</div>
-                  {exList.map(ex => (
-                    <button key={ex.id} onClick={async () => { await onAdd(ex.id); setShowPicker(false); setSearchQ('') }} disabled={saving} style={{ width: '100%', padding: '8px 10px', borderRadius: 7, marginBottom: 4, fontSize: 12, fontWeight: 600, cursor: 'pointer', textAlign: 'left', background: 'var(--bg-input)', border: '1px solid var(--border)', color: 'var(--text-primary)', fontFamily: 'inherit' }}>
-                      <div>{ex.name}</div>
-                      <div style={{ fontSize: 10, color: 'var(--text-muted)', marginTop: 1 }}>{ex.default_sets} sets · {ex.default_reps} {ex.impact_areas.length > 0 ? `· ${ex.impact_areas.slice(0,2).join(', ')}` : ''}</div>
-                    </button>
-                  ))}
-                </div>
-              )
-            })}
-            {filtered.length === 0 && <div style={{ textAlign: 'center', padding: '16px 0', color: 'var(--text-muted)', fontSize: 13 }}>No exercises found</div>}
-          </div>
-          <button onClick={() => { setShowPicker(false); setSearchQ('') }} style={{ marginTop: 8, background: 'transparent', border: 'none', color: 'var(--text-muted)', fontSize: 11, cursor: 'pointer' }}>Cancel</button>
-        </div>
+          {notice && (
+            <div style={{ fontSize: 12, fontWeight: 600, marginBottom: 8, color: notice.error ? 'var(--red)' : 'var(--green)' }}>
+              {notice.error ? '⚠ ' : '✓ '}{notice.text}
+            </div>
+          )}
+
+          {/* Exercise slots, grouped by impacted area */}
+          {slotGroups.map(({ key, label, items }) => {
+            return (
+              <div key={key || 'untagged'} style={{ marginBottom: 6 }}>
+                <AreaHeader label={label} count={items.length} />
+                {items.map(slot => {
+                  const info = EXERCISE_TYPE_LABELS[slot.exercise.exercise_type]
+                  const done = slot.completed
+                  const sel  = selected.has(slot.id)
+                  return (
+                    <div
+                      key={slot.id}
+                      onClick={() => toggleSelect(slot.id)}
+                      style={{
+                        background: done ? 'rgba(74,222,128,0.06)' : info.bg,
+                        border: `1px solid ${done ? 'rgba(74,222,128,0.35)' : info.border}`,
+                        boxShadow: sel ? '0 0 0 2px var(--blue)' : 'none',
+                        borderRadius: 9, padding: '10px 12px', marginBottom: 6,
+                        display: 'flex', alignItems: 'flex-start', gap: 8,
+                        opacity: done ? 0.85 : 1, transition: 'all 0.2s', cursor: 'pointer',
+                      }}
+                    >
+                      {/* Done checkbox (unchanged behaviour) */}
+                      <button
+                        onClick={e => { e.stopPropagation(); void onToggle(slot.id, !done) }}
+                        disabled={saving}
+                        aria-label={done ? 'Mark incomplete' : 'Mark complete'}
+                        style={{
+                          flexShrink: 0, marginTop: 1,
+                          width: 22, height: 22, borderRadius: 6,
+                          border: `2px solid ${done ? 'var(--green)' : info.border}`,
+                          background: done ? 'rgba(74,222,128,0.2)' : 'transparent',
+                          cursor: 'pointer', display: 'flex', alignItems: 'center',
+                          justifyContent: 'center', transition: 'all 0.18s',
+                        }}
+                      >
+                        {done && <span style={{ color: 'var(--green)', fontSize: 12, fontWeight: 700, lineHeight: 1 }}>✓</span>}
+                      </button>
+
+                      <div style={{ flex: 1, minWidth: 0 }}>
+                        <div style={{
+                          fontSize: 13, fontWeight: 700,
+                          color: done ? 'var(--text-muted)' : 'var(--text-primary)',
+                          textDecoration: done ? 'line-through' : 'none',
+                          transition: 'all 0.2s',
+                        }}>
+                          {slot.exercise.name}
+                        </div>
+                        <div style={{ fontSize: 11, color: done ? 'var(--text-muted)' : info.color, fontWeight: 600, marginTop: 2 }}>
+                          {slot.custom_sets ?? slot.exercise.default_sets} sets · {slot.custom_reps ?? slot.exercise.default_reps}
+                        </div>
+                        {slot.exercise.impact_areas.length > 1 && (
+                          <div style={{ fontSize: 10, color: 'var(--text-muted)', marginTop: 3 }}>
+                            also {slot.exercise.impact_areas.slice(1, 4).join(' · ')}
+                          </div>
+                        )}
+                      </div>
+
+                      {sel && <span style={{ color: 'var(--blue)', fontSize: 13, fontWeight: 800, flexShrink: 0, lineHeight: '26px' }}>●</span>}
+
+                      <button onClick={e => { e.stopPropagation(); void onRemove(slot.id) }} disabled={saving} style={{ background: 'rgba(248,113,113,0.1)', border: '1px solid rgba(248,113,113,0.25)', borderRadius: 6, color: 'var(--red)', fontSize: 12, width: 26, height: 26, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>×</button>
+                    </div>
+                  )
+                })}
+              </div>
+            )
+          })}
+
+          {/* Add exercise picker */}
+          {!showPicker ? (
+            <button onClick={() => setShowPicker(true)} style={{ width: '100%', padding: '7px 12px', borderRadius: 9, fontSize: 12, fontWeight: 600, cursor: 'pointer', textAlign: 'left', border: '1.5px dashed rgba(74,222,128,0.4)', background: 'rgba(74,222,128,0.05)', color: 'var(--green)', fontFamily: 'inherit', display: 'flex', alignItems: 'center', gap: 6 }}>
+              💪 Add exercise
+            </button>
+          ) : (
+            <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 10, padding: 12 }}>
+              <input type="text" value={searchQ} onChange={e => setSearchQ(e.target.value)} placeholder="Search exercises…" style={{ ...fs(), marginBottom: 10 }} autoFocus />
+              <div style={{ maxHeight: 280, overflowY: 'auto' }}>
+                {pickerGroups.map(g => (
+                  <div key={g.key || 'untagged'} style={{ marginBottom: 10 }}>
+                    <AreaHeader label={g.label} count={g.items.length} />
+                    {g.items.map(ex => (
+                      <button key={ex.id} onClick={async () => { await onAdd(ex.id); setShowPicker(false); setSearchQ('') }} disabled={saving} style={{ width: '100%', padding: '8px 10px', borderRadius: 7, marginBottom: 4, fontSize: 12, fontWeight: 600, cursor: 'pointer', textAlign: 'left', background: 'var(--bg-input)', border: '1px solid var(--border)', color: 'var(--text-primary)', fontFamily: 'inherit' }}>
+                        <div>{ex.name}</div>
+                        <div style={{ fontSize: 10, color: 'var(--text-muted)', marginTop: 1 }}>{ex.default_sets} sets · {ex.default_reps}{ex.impact_areas.length > 1 ? ` · also ${ex.impact_areas.slice(1, 3).join(', ')}` : ''}</div>
+                      </button>
+                    ))}
+                  </div>
+                ))}
+                {filtered.length === 0 && <div style={{ textAlign: 'center', padding: '16px 0', color: 'var(--text-muted)', fontSize: 13 }}>No exercises found</div>}
+              </div>
+              <button onClick={() => { setShowPicker(false); setSearchQ('') }} style={{ marginTop: 8, background: 'transparent', border: 'none', color: 'var(--text-muted)', fontSize: 11, cursor: 'pointer' }}>Cancel</button>
+            </div>
+          )}
+        </>
       )}
     </div>
   )
@@ -411,7 +600,22 @@ export default function WorkoutPlanner() {
   const pickerRef                     = useRef<HTMLDivElement>(null)
 
   const { exercises, loading: libLoading, error: libError, saving: libSaving, add, update, remove } = useExerciseLibrary()
-  const { slots, dayCompletions, loading: planLoading, error: planError, saving: planSaving, addSlot, toggleCompleted, markDayDone, removeSlot } = useWorkoutPlan(weekStart)
+  const { slots, dayCompletions, loading: planLoading, error: planError, saving: planSaving, addSlot, toggleCompleted, markDayDone, removeSlot, copySlots, clearDay } = useWorkoutPlan(weekStart)
+
+  // Today (real calendar day) — target for "Copy to today"
+  const today = { weekStart: currentMondayISO(), weekday: WEEKDAYS[(new Date().getDay() + 6) % 7] as Weekday }
+
+  // Which days are expanded. Default: today (if viewing the current week), else all collapsed.
+  const defaultExpanded = (ws: string): Set<Weekday> =>
+    ws === today.weekStart ? new Set<Weekday>([today.weekday]) : new Set<Weekday>()
+  // Overrides are tied to the week they were made in; changing week falls back to the default
+  const [expandState, setExpandState] = useState<{ week: string; days: Set<Weekday> } | null>(null)
+  const expandedDays = expandState && expandState.week === weekStart ? expandState.days : defaultExpanded(weekStart)
+  const setExpandedDays = (days: Set<Weekday>) => setExpandState({ week: weekStart, days })
+  const toggleDay = (d: Weekday) => {
+    const n = new Set(expandedDays); if (n.has(d)) n.delete(d); else n.add(d); setExpandedDays(n)
+  }
+  const allExpanded = expandedDays.size === WEEKDAYS.length
 
   const slotsFor = (day: Weekday) => slots.filter(s => s.weekday === day).sort((a, b) => a.sort_order - b.sort_order)
 
@@ -482,6 +686,17 @@ export default function WorkoutPlanner() {
             <div style={{ background: 'rgba(248,113,113,0.08)', border: '1px solid rgba(248,113,113,0.3)', borderRadius: 10, padding: 14, fontSize: 13, color: 'var(--red)', marginBottom: 14 }}>{planError ?? libError}</div>
           )}
 
+          {!planLoading && !libLoading && !planError && !libError && (
+            <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 8 }}>
+              <button
+                onClick={() => setExpandedDays(allExpanded ? new Set() : new Set<Weekday>(WEEKDAYS))}
+                style={{ background: 'transparent', border: 'none', color: 'var(--text-muted)', fontSize: 11, fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit' }}
+              >
+                {allExpanded ? 'Collapse all ▲' : 'Expand all ▼'}
+              </button>
+            </div>
+          )}
+
           {!planLoading && !libLoading && !planError && !libError && WEEKDAYS.map(day => (
             <DayWorkout
               key={day}
@@ -491,6 +706,12 @@ export default function WorkoutPlanner() {
               saving={planSaving}
               weekStart={weekStart}
               dayDone={dayCompletions.some(d => d.weekday === day && d.completed)}
+              isToday={today.weekStart === weekStart && today.weekday === day}
+              expanded={expandedDays.has(day)}
+              today={today}
+              onToggleExpand={() => toggleDay(day)}
+              onCopy={copySlots}
+              onClearDay={() => clearDay(weekStart, day)}
               onAdd={exId => addSlot({ weekStart, weekday: day, exerciseId: exId })}
               onRemove={removeSlot}
               onToggle={(id, completed) => toggleCompleted(id, completed, day, weekStart, slots)}
