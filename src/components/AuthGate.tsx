@@ -29,7 +29,7 @@ function InputField({
         style={{
           background: 'var(--bg-input)',
           border: '1px solid var(--border-input)',
-          borderRadius: 10,
+          borderRadius: 16,
           color: 'var(--text-primary)',
           fontSize: 14,
           padding: '11px 14px',
@@ -39,7 +39,7 @@ function InputField({
           boxSizing: 'border-box',
           transition: 'border-color 0.2s',
         }}
-        onFocus={(e) => { e.target.style.borderColor = 'rgba(96,165,250,0.5)' }}
+        onFocus={(e) => { e.target.style.borderColor = 'rgba(255,255,255,0.5)' }}
         onBlur={(e)  => { e.target.style.borderColor = 'var(--border-input)' }}
       />
     </div>
@@ -60,16 +60,16 @@ function PrimaryButton({
       disabled={disabled}
       style={{
         width: '100%',
-        padding: '12px 20px',
-        borderRadius: 10,
+        padding: '14px 20px',
+        borderRadius: 999,
         fontSize: 14,
         fontWeight: 700,
         cursor: disabled ? 'not-allowed' : 'pointer',
         border: 'none',
         background: disabled
-          ? 'rgba(74,222,128,0.2)'
-          : 'linear-gradient(135deg, #4ade80 0%, #22d3ee 100%)',
-        color: disabled ? 'rgba(74,222,128,0.5)' : 'var(--bg)',
+          ? 'rgba(185,249,79,0.2)'
+          : 'var(--green)',
+        color: disabled ? 'rgba(185,249,79,0.5)' : 'var(--bg)',
         opacity: disabled ? 0.6 : 1,
         transition: 'all 0.2s',
         fontFamily: 'inherit',
@@ -91,8 +91,8 @@ function GoogleButton({ onClick, disabled }: { onClick: () => void; disabled: bo
       disabled={disabled}
       style={{
         width: '100%',
-        padding: '11px 20px',
-        borderRadius: 10,
+        padding: '14px 20px',
+        borderRadius: 999,
         fontSize: 14,
         fontWeight: 600,
         cursor: disabled ? 'not-allowed' : 'pointer',
@@ -204,12 +204,6 @@ export default function AuthGate() {
       justifyContent: 'center',
       padding: '24px 16px',
     }}>
-      {/* Background glow */}
-      <div style={{
-        position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, pointerEvents: 'none',
-        background: 'radial-gradient(ellipse 60% 40% at 50% 0%, rgba(74,222,128,0.07) 0%, transparent 70%)',
-      }} />
-
       <div style={{
         width: '100%',
         maxWidth: 400,
@@ -218,32 +212,30 @@ export default function AuthGate() {
       }}>
 
         {/* Logo / branding */}
-        <div style={{ textAlign: 'center', marginBottom: 32 }}>
-          <div style={{ fontSize: 40, marginBottom: 10 }}>🏃</div>
-          <h1 style={{ fontSize: 22, fontWeight: 800, letterSpacing: '-0.02em', marginBottom: 4 }}>
-            Run & Eat
+        <div style={{ textAlign: 'center', marginBottom: 28 }}>
+          <div style={{ width: 72, height: 72, borderRadius: '50%', background: 'var(--green)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 34, margin: '0 auto 14px' }}>🏃</div>
+          <h1 style={{ fontSize: 40, lineHeight: 1.05, marginBottom: 8 }}>
+            Run &amp; Eat
           </h1>
           <p style={{ fontSize: 13, color: 'var(--text-muted)' }}>
-            Training planner · Meal planner · Backed by Supabase
+            Training planner · Meal planner
           </p>
         </div>
 
         {/* Card */}
         <div style={{
           background: 'var(--surface)',
-          border: '1px solid var(--border)',
-          borderRadius: 18,
-          padding: '28px 24px',
-          backdropFilter: 'blur(12px)',
+          borderRadius: 32,
+          padding: '24px 22px 28px',
         }}>
 
           {/* Mode tabs */}
           <div style={{
             display: 'flex',
             background: 'var(--bg-input)',
-            borderRadius: 10,
-            padding: 3,
-            marginBottom: 24,
+            borderRadius: 999,
+            padding: 4,
+            marginBottom: 22,
           }}>
             {(['signin', 'signup'] as AuthMode[]).map((m) => (
               <button
@@ -251,14 +243,14 @@ export default function AuthGate() {
                 onClick={() => { setMode(m); setError(null); setSuccessMsg(null) }}
                 style={{
                   flex: 1,
-                  padding: '8px 0',
-                  borderRadius: 8,
+                  padding: '11px 0',
+                  borderRadius: 999,
                   fontSize: 13,
                   fontWeight: 700,
                   cursor: 'pointer',
                   border: 'none',
-                  background: mode === m ? 'var(--border)' : 'transparent',
-                  color: mode === m ? 'var(--text-primary)' : 'var(--text-muted)',
+                  background: mode === m ? 'var(--green)' : 'transparent',
+                  color: mode === m ? 'var(--on-accent)' : 'var(--text-secondary)',
                   transition: 'all 0.2s',
                   fontFamily: 'inherit',
                 }}
@@ -324,10 +316,9 @@ export default function AuthGate() {
             {/* Error / success messages */}
             {error && (
               <div style={{
-                background: 'rgba(248,113,113,0.1)',
-                border: '1px solid rgba(248,113,113,0.3)',
-                borderRadius: 8,
-                padding: '10px 12px',
+                background: 'rgba(255,107,94,0.12)',
+                borderRadius: 18,
+                padding: '12px 16px',
                 fontSize: 13,
                 color: 'var(--red)',
                 display: 'flex',
@@ -341,10 +332,9 @@ export default function AuthGate() {
 
             {successMsg && (
               <div style={{
-                background: 'rgba(74,222,128,0.1)',
-                border: '1px solid rgba(74,222,128,0.3)',
-                borderRadius: 8,
-                padding: '10px 12px',
+                background: 'rgba(185,249,79,0.12)',
+                borderRadius: 18,
+                padding: '12px 16px',
                 fontSize: 13,
                 color: 'var(--green)',
                 display: 'flex',

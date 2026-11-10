@@ -190,8 +190,8 @@ export type MealType = 'lunch' | 'snack'
 export const MEAL_TYPES: MealType[] = ['lunch', 'snack']
 
 export const MEAL_LABELS: Record<MealType, { label: string; icon: string; color: string; border: string; bg: string }> = {
-  lunch: { label: 'Lunch', icon: '🥗', color: 'var(--blue)', border: 'rgba(96,165,250,0.3)', bg: 'rgba(96,165,250,0.07)' },
-  snack: { label: 'Snack', icon: '🍎', color: 'var(--green)', border: 'rgba(74,222,128,0.3)', bg: 'rgba(74,222,128,0.07)' },
+  lunch: { label: 'Lunch', icon: '🥗', color: 'var(--blue)', border: 'rgba(255,255,255,0.3)', bg: 'rgba(255,255,255,0.07)' },
+  snack: { label: 'Snack', icon: '🍎', color: 'var(--green)', border: 'rgba(185,249,79,0.3)', bg: 'rgba(185,249,79,0.07)' },
 }
 
 export const WEEKDAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'] as const
@@ -274,12 +274,12 @@ export const EXERCISE_TYPES: ExerciseType[] = [
 ]
 
 export const EXERCISE_TYPE_LABELS: Record<ExerciseType, { label: string; icon: string; color: string; border: string; bg: string }> = {
-  upper_body: { label: 'Upper Body', icon: '💪', color: 'var(--blue)', border: 'rgba(96,165,250,0.35)', bg: 'rgba(96,165,250,0.08)' },
-  lower_body: { label: 'Lower Body', icon: '🦵', color: 'var(--purple)', border: 'rgba(167,139,250,0.35)', bg: 'rgba(167,139,250,0.08)' },
-  core: { label: 'Core', icon: '🎯', color: 'var(--amber)', border: 'rgba(245,158,11,0.35)', bg: 'rgba(245,158,11,0.08)' },
+  upper_body: { label: 'Upper Body', icon: '💪', color: 'var(--blue)', border: 'rgba(255,255,255,0.35)', bg: 'rgba(255,255,255,0.08)' },
+  lower_body: { label: 'Lower Body', icon: '🦵', color: 'var(--purple)', border: 'rgba(255,154,31,0.35)', bg: 'rgba(255,154,31,0.08)' },
+  core: { label: 'Core', icon: '🎯', color: 'var(--amber)', border: 'rgba(255,154,31,0.35)', bg: 'rgba(255,154,31,0.08)' },
   cardio: { label: 'Cardio', icon: '🏃', color: 'var(--red)', border: 'rgba(248,113,113,0.35)', bg: 'rgba(248,113,113,0.08)' },
   full_body: { label: 'Full Body', icon: '⚡', color: 'var(--yellow)', border: 'rgba(250,204,21,0.35)', bg: 'rgba(250,204,21,0.08)' },
-  flexibility: { label: 'Flexibility', icon: '🧘', color: 'var(--green)', border: 'rgba(74,222,128,0.35)', bg: 'rgba(74,222,128,0.08)' },
+  flexibility: { label: 'Flexibility', icon: '🧘', color: 'var(--green)', border: 'rgba(185,249,79,0.35)', bg: 'rgba(185,249,79,0.08)' },
   other: { label: 'Other', icon: '🏅', color: 'var(--text-muted)', border: 'var(--border)', bg: 'var(--surface)' },
 }
 

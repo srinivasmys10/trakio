@@ -76,12 +76,12 @@ export default function Dashboard({ progress }: DashboardProps) {
               <div style={{ fontSize: 10, fontWeight: 700, color: pc.text, marginBottom: 3, textTransform: 'uppercase', letterSpacing: '0.07em' }}>
                 Phase {ph.id}
               </div>
-              <div style={{ fontSize: 14, fontWeight: 700, marginBottom: 2 }}>{ph.name}</div>
+              <div className="display" style={{ fontSize: 20, marginBottom: 2 }}>{ph.name}</div>
               <div style={{ fontSize: 11, color: 'var(--text-muted)', marginBottom: 8 }}>
                 Wk {ph.weeks[0]}–{ph.weeks[ph.weeks.length - 1]}
               </div>
-              <div style={{ height: 4, background: 'var(--surface-hover)', borderRadius: 2 }}>
-                <div style={{ height: '100%', width: `${pct}%`, background: pc.border, borderRadius: 2, transition: 'width 0.5s' }} />
+              <div style={{ height: 8, background: 'var(--bg-track)', borderRadius: 999, overflow: 'hidden' }}>
+                <div style={{ height: '100%', width: `${pct}%`, background: pc.border, borderRadius: 999, transition: 'width 0.5s' }} />
               </div>
               <div style={{ fontSize: 11, color: pc.text, marginTop: 4, textAlign: 'right', fontWeight: 700 }}>
                 {pct}%
@@ -95,10 +95,9 @@ export default function Dashboard({ progress }: DashboardProps) {
       <SectionTitle>Your Stats</SectionTitle>
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 10, marginBottom: 20 }}>
         {stats.map((s) => (
-          <Card key={s.label} style={{ textAlign: 'center', padding: 12, marginBottom: 0 }}>
-            <div style={{ fontSize: 20, marginBottom: 4 }}>{s.icon}</div>
-            <div style={{ fontSize: 22, fontWeight: 800, color: 'var(--green)' }}>{s.val}</div>
-            <div style={{ fontSize: 10, color: 'var(--text-muted)', lineHeight: 1.3 }}>{s.label}</div>
+          <Card key={s.label} style={{ textAlign: 'left', padding: '14px 16px', marginBottom: 0 }}>
+            <div style={{ fontSize: 10, color: 'var(--text-secondary)', lineHeight: 1.3, textTransform: 'uppercase', letterSpacing: '0.05em' }}>{s.icon} {s.label}</div>
+            <div className="display" style={{ fontSize: 40, lineHeight: 1.1, color: 'var(--green)', marginTop: 6 }}>{s.val}</div>
           </Card>
         ))}
       </div>
@@ -133,7 +132,7 @@ export default function Dashboard({ progress }: DashboardProps) {
               borderBottom: i < PROGRESSION.length - 1 ? '1px solid var(--border-subtle)' : 'none',
             }}
           >
-            <div style={{ fontSize: 13, fontWeight: 700, color: 'var(--blue)', marginBottom: 3 }}>
+            <div style={{ fontSize: 13, fontWeight: 700, color: 'var(--green)', marginBottom: 3 }}>
               {item.heading}
             </div>
             <div style={{ fontSize: 12, color: 'var(--text-secondary)', lineHeight: 1.5 }}>

@@ -4,13 +4,15 @@ export default function SectionTitle({ children, style = {} }: SectionTitleProps
   return (
     <div
       style={{
-        fontSize: 12,
-        fontWeight: 700,
-        color: 'var(--text-muted)',
+        fontFamily: 'var(--font-display)',
+        fontSize: 18,
+        fontWeight: 600,
+        color: 'var(--text-primary)',
         textTransform: 'uppercase',
-        letterSpacing: '0.1em',
+        letterSpacing: '0.02em',
         marginBottom: 12,
-        marginTop: 4,
+        marginTop: 8,
+        paddingLeft: 4,
         ...style,
       }}
     >

@@ -7,10 +7,10 @@ import type {
 // ─── PHASES ──────────────────────────────────────────────────────────────────
 
 export const PHASES: Phase[] = [
-  { id: 1, name: 'Foundation',   weeks: [1,2,3,4],     color: '#4ade80', desc: 'Build aerobic base & gym habits' },
-  { id: 2, name: 'Development',  weeks: [5,6,7,8,9],   color: '#60a5fa', desc: 'Increase volume & introduce tempo' },
-  { id: 3, name: 'Build',        weeks: [10,11,12,13], color: '#f59e0b', desc: 'Peak mileage, intervals & strength' },
-  { id: 4, name: 'Taper & Race', weeks: [14,15,16,17], color: '#f87171', desc: 'Reduce volume, sharpen & race' },
+  { id: 1, name: 'Foundation',   weeks: [1,2,3,4],     color: '#b9f94f', desc: 'Build aerobic base & gym habits' },
+  { id: 2, name: 'Development',  weeks: [5,6,7,8,9],   color: '#ffffff', desc: 'Increase volume & introduce tempo' },
+  { id: 3, name: 'Build',        weeks: [10,11,12,13], color: '#ff9a1f', desc: 'Peak mileage, intervals & strength' },
+  { id: 4, name: 'Taper & Race', weeks: [14,15,16,17], color: '#ff6b5e', desc: 'Reduce volume, sharpen & race' },
 ]
 
 // ─── WEEKS (Week 1 = Mon 6 Apr 2026) ─────────────────────────────────────────
@@ -374,22 +374,22 @@ export const NUTRITION_TIPS: NutritionTip[] = [
 // ─── COLOUR MAPS ─────────────────────────────────────────────────────────────
 
 export const PHASE_COLORS: Record<number, PhaseColor> = {
-  1: { bg: 'rgba(74,222,128,0.12)',  border: '#4ade80', text: '#4ade80' },
-  2: { bg: 'rgba(96,165,250,0.12)',  border: '#60a5fa', text: '#60a5fa' },
-  3: { bg: 'rgba(245,158,11,0.12)',  border: '#f59e0b', text: '#f59e0b' },
-  4: { bg: 'rgba(248,113,113,0.12)', border: '#f87171', text: '#f87171' },
+  1: { bg: 'rgba(185,249,79,0.12)',  border: '#b9f94f', text: '#b9f94f' },
+  2: { bg: 'rgba(255,255,255,0.12)',  border: '#ffffff', text: '#ffffff' },
+  3: { bg: 'rgba(255,154,31,0.12)',  border: '#ff9a1f', text: '#ff9a1f' },
+  4: { bg: 'rgba(248,113,113,0.12)', border: '#ff6b5e', text: '#ff6b5e' },
 }
 
 export const RUN_TYPE_COLORS: Record<string, string> = {
-  'Easy':                '#4ade80',
+  'Easy':                '#b9f94f',
   'Easy + Strides':      '#86efac',
   'Easy Tempo':          '#a3e635',
   'Tempo':               '#facc15',
   'Race Pace':           '#f97316',
   'Race Pace + Strides': '#f97316',
-  'Intervals':           '#f43f5e',
+  'Intervals':           '#ff6b5e',
   'Recovery':            '#818cf8',
-  'Long':                '#60a5fa',
+  'Long':                '#ffffff',
   'Strides only':        '#c084fc',
   'Shakeout + Strides':  '#c084fc',
   '🏁 RACE DAY':         '#fbbf24',

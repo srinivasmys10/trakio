@@ -28,7 +28,6 @@ const AUTH_NAV: NavItem[] = [
   { id: 'workout',  label: 'Workout',  icon: '💪' },
   { id: 'marathon', label: 'Marathon', icon: '🏁' },
 ]
-const MEALS_NAV_IDS: NavId[] = ['food', 'workout']
 
 // Map NavId → URL path and vice-versa
 const NAV_TO_PATH: Record<NavId, string> = {
@@ -66,14 +65,12 @@ function Shell({ nav, theme, onToggle, syncStatus, user, children }: ShellProps)
   const activeId = PATH_TO_NAV[pathname] ?? 'dashboard'
 
   return (
-    <div style={{ background: 'var(--bg)', minHeight: '100dvh', paddingBottom: 80 }}>
+    <div style={{ background: 'var(--bg)', minHeight: '100dvh', paddingBottom: 104 }}>
       {/* ── Header ── */}
       <header style={{
         background: 'var(--bg-header)',
-        borderBottom: '1px solid var(--border)',
-        padding: '12px 20px',
+        padding: 'max(12px, env(safe-area-inset-top)) 16px 10px',
         position: 'sticky', top: 0, zIndex: 100,
-        boxShadow: 'var(--shadow)',
       }}>
         <div style={{ maxWidth: 680, margin: '0 auto' }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12 }}>
@@ -84,21 +81,15 @@ function Shell({ nav, theme, onToggle, syncStatus, user, children }: ShellProps)
                 /* Training app branding */
                 <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
                   <div style={{
-                    width: 34, height: 34, borderRadius: 10, flexShrink: 0,
-                    background: activeId === 'food'
-                      ? 'linear-gradient(135deg,#f59e0b,#ef4444)'
-                      : activeId === 'workout'
-                      ? 'linear-gradient(135deg,#a78bfa,#60a5fa)'
-                      : activeId === 'marathon'
-                      ? 'linear-gradient(135deg,#f43f5e,#fb923c)'
-                      : 'linear-gradient(135deg,#4ade80,#22d3ee)',
+                    width: 42, height: 42, borderRadius: '50%', flexShrink: 0,
+                    background: 'var(--green)', color: 'var(--on-accent)',
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    fontSize: 17,
+                    fontSize: 19,
                   }}>
                     {activeId === 'food' ? '🍽' : activeId === 'workout' ? '💪' : activeId === 'marathon' ? '🏁' : '🏃'}
                   </div>
                   <div>
-                    <div style={{ fontSize: 14, fontWeight: 800, letterSpacing: '-0.01em', lineHeight: 1.2, color: 'var(--text-primary)' }}>
+                    <div className="display" style={{ fontSize: 20, lineHeight: 1.1, color: 'var(--text-primary)' }}>
                       {activeId === 'food' ? 'Meal Planner' : activeId === 'workout' ? 'Workout Planner' : activeId === 'marathon' ? 'Marathon Plan' : 'Training Hub'}
                     </div>
                     <SyncDot status={syncStatus} />
@@ -107,11 +98,11 @@ function Shell({ nav, theme, onToggle, syncStatus, user, children }: ShellProps)
               ) : (
                 /* Public meals branding */
                 <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                  <div style={{ width: 34, height: 34, borderRadius: 10, flexShrink: 0, background: 'linear-gradient(135deg,#f59e0b,#ef4444)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 17 }}>
+                  <div style={{ width: 42, height: 42, borderRadius: '50%', flexShrink: 0, background: 'var(--green)', color: 'var(--on-accent)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 19 }}>
                     🍽
                   </div>
                   <div>
-                    <div style={{ fontSize: 14, fontWeight: 800, letterSpacing: '-0.01em', lineHeight: 1.2, color: 'var(--text-primary)' }}>
+                    <div className="display" style={{ fontSize: 20, lineHeight: 1.1, color: 'var(--text-primary)' }}>
                       Meal Planner
                     </div>
                     <div style={{ fontSize: 10, color: 'var(--text-muted)', marginTop: 1, display: 'flex', alignItems: 'center', gap: 4 }}>
@@ -137,7 +128,7 @@ function Shell({ nav, theme, onToggle, syncStatus, user, children }: ShellProps)
                 ? <UserMenu user={user} onSignOut={signOut} />
                 : (
                   <Link to="/" style={{ textDecoration: 'none' }}>
-                    <button style={{ padding: '6px 12px', borderRadius: 8, fontSize: 12, fontWeight: 700, background: 'var(--green)', color: 'var(--bg)', border: 'none', cursor: 'pointer' }}>
+                    <button style={{ padding: '9px 16px', borderRadius: 999, fontSize: 12, fontWeight: 700, background: 'var(--green)', color: 'var(--on-accent)', border: 'none', cursor: 'pointer' }}>
                       Sign in
                     </button>
                   </Link>
@@ -160,47 +151,34 @@ function Shell({ nav, theme, onToggle, syncStatus, user, children }: ShellProps)
         {children}
       </main>
 
-      {/* ── Bottom nav ── */}
+      {/* ── Bottom nav — floating pill bar ── */}
       <nav style={{
-        position: 'fixed', bottom: 0, left: 0, right: 0,
-        background: 'var(--bg-nav)', borderTop: '1px solid var(--border)',
-        display: 'flex', alignItems: 'stretch',
-        padding: '4px 6px max(10px,env(safe-area-inset-bottom))',
-        zIndex: 100, backdropFilter: 'blur(16px)',
+        position: 'fixed', left: 12, right: 12,
+        bottom: 'max(12px, env(safe-area-inset-bottom))',
+        maxWidth: 480, margin: '0 auto',
+        background: 'var(--bg-nav)', border: '1px solid var(--border)',
+        borderRadius: 999, boxShadow: 'var(--shadow)',
+        display: 'flex', alignItems: 'center', gap: 4, padding: 5,
+        zIndex: 100, backdropFilter: 'blur(18px)', WebkitBackdropFilter: 'blur(18px)',
       }}>
         {nav.map((item) => {
-          const active  = activeId === item.id
-          const isMeals = MEALS_NAV_IDS.includes(item.id)
-          //const prev    = nav[idx - 1]
-          //const sectionBreak = isMeals && prev && !MEALS_NAV_IDS.includes(prev.id)
-
+          const active = activeId === item.id
           return (
-            <div key={item.id} style={{ display: 'flex', alignItems: 'center', flex: 1 }}>
-              {/* Vertical divider between training and meals sections */}
-              {/*sectionBreak && (
-                <div style={{ width: 1, height: 36, background: 'var(--border)', margin: '0 2px', flexShrink: 0 }} />
-              )*/}
-              <button
-                onClick={() => navigate(NAV_TO_PATH[item.id])}
-                style={{
-                  flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center',
-                  justifyContent: 'center',
-                  gap: 2, padding: '5px 4px 4px',
-                  borderRadius: 10,
-                  background: active
-                    ? item.id === 'workout' ? 'rgba(167,139,250,0.12)' : item.id === 'marathon' ? 'rgba(244,63,94,0.12)' : isMeals ? 'rgba(245,158,11,0.12)' : 'rgba(74,222,128,0.12)'
-                    : 'transparent',
-                  color: active
-                    ? item.id === 'workout' ? 'var(--purple)' : item.id === 'marathon' ? '#f43f5e' : isMeals ? 'var(--amber)' : 'var(--green)'
-                    : 'var(--text-muted)',
-                  border: 'none', cursor: 'pointer', transition: 'all 0.18s',
-                  minWidth: 44,
-                }}
-              >
-                <span style={{ fontSize: 20, lineHeight: '22px', display: 'block', textAlign: 'center' }}>{item.icon}</span>
-                <span style={{ fontSize: 9, fontWeight: 700, letterSpacing: '0.01em', lineHeight: 1.2, textAlign: 'center', whiteSpace: 'nowrap' }}>{item.label}</span>
-              </button>
-            </div>
+            <button
+              key={item.id}
+              onClick={() => navigate(NAV_TO_PATH[item.id])}
+              style={{
+                flex: active ? 1.5 : 1, display: 'flex', alignItems: 'center', justifyContent: 'center',
+                gap: 7, padding: '11px 10px', borderRadius: 999,
+                background: active ? 'var(--green)' : 'transparent',
+                color: active ? 'var(--on-accent)' : 'var(--text-secondary)',
+                border: 'none', cursor: 'pointer', transition: 'all 0.2s',
+                fontSize: 13, fontWeight: 700, whiteSpace: 'nowrap',
+              }}
+            >
+              <span style={{ fontSize: 17, lineHeight: 1 }}>{item.icon}</span>
+              {active && <span>{item.label}</span>}
+            </button>
           )
         })}
       </nav>
@@ -265,9 +243,9 @@ function TrainingApp({ userId, user }: { userId: string; user: AuthUserShape }) 
 
   if (!loaded) return (
     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100dvh', gap: 14, background: 'var(--bg)' }}>
-      <div style={{ width: 52, height: 52, borderRadius: 14, background: 'linear-gradient(135deg,#4ade80,#22d3ee)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 26 }}>🏃</div>
+      <div style={{ width: 52, height: 52, borderRadius: '50%', background: 'var(--green)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 26 }}>🏃</div>
       <div style={{ textAlign: 'center' }}>
-        <div style={{ fontSize: 16, fontWeight: 700, color: 'var(--text-primary)', marginBottom: 4 }}>Training Hub</div>
+        <div style={{ fontSize: 22, fontFamily: 'var(--font-display)', textTransform: 'uppercase', fontWeight: 600, color: 'var(--text-primary)', marginBottom: 4 }}>Training Hub</div>
         <div style={{ fontSize: 12, color: 'var(--text-muted)' }}>Loading your plan…</div>
       </div>
       <div style={{ width: 160, height: 3, background: 'var(--bg-track)', borderRadius: 2, overflow: 'hidden' }}>
@@ -339,7 +317,7 @@ export default function App() {
   // Show auth loading splash
   if (authLoading) return (
     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100dvh', gap: 12, background: 'var(--bg)' }}>
-      <div style={{ width: 44, height: 44, borderRadius: 12, background: 'linear-gradient(135deg,#4ade80,#22d3ee)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 22 }}>🏃</div>
+      <div style={{ width: 44, height: 44, borderRadius: '50%', background: 'var(--green)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 22 }}>🏃</div>
       <div style={{ fontSize: 14, color: 'var(--text-muted)', fontWeight: 500 }}>Loading…</div>
     </div>
   )

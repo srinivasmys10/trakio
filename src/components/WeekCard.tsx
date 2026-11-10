@@ -21,7 +21,7 @@ export default function WeekCard({ weekData, progress, isActive, onClick }: Week
       style={{
         background: isActive ? pc.bg : 'var(--bg)',
         border: `1.5px solid ${isActive ? pc.border : 'var(--border)'}`,
-        borderRadius: 12,
+        borderRadius: 22,
         padding: '13px 14px',
         cursor: 'pointer',
         transition: 'all 0.2s',
@@ -35,9 +35,9 @@ export default function WeekCard({ weekData, progress, isActive, onClick }: Week
         {allDone && <span style={{ fontSize: 13 }}>✅</span>}
         {weekData.deload === true && (
           <span style={{
-            background: 'rgba(167,139,250,0.2)',
+            background: 'rgba(255,154,31,0.2)',
             border: '1px solid var(--purple)',
-            borderRadius: 4,
+            borderRadius: 999,
             padding: '1px 5px',
             fontSize: 8,
             color: 'var(--purple)',
@@ -54,7 +54,7 @@ export default function WeekCard({ weekData, progress, isActive, onClick }: Week
         <span style={{
           background: pc.bg,
           border: `1px solid ${pc.border}`,
-          borderRadius: 6,
+          borderRadius: 999,
           padding: '2px 7px',
           fontSize: 10,
           fontWeight: 700,
@@ -81,10 +81,10 @@ export default function WeekCard({ weekData, progress, isActive, onClick }: Week
         <span style={{ fontSize: 10, color: 'var(--text-muted)', whiteSpace: 'nowrap' }}>
           🏃 {completedRuns}/{weekData.runs.length} · 🏋️ {completedGym}/{weekData.gym.length}
         </span>
-        <div style={{ flex: 1, height: 3, background: 'var(--surface-hover)', borderRadius: 2 }}>
+        <div style={{ flex: 1, height: 3, background: 'var(--surface-hover)', borderRadius: 999 }}>
           <div style={{
             height: '100%',
-            borderRadius: 2,
+            borderRadius: 999,
             background: pc.border,
             width: `${pct}%`,
             transition: 'width 0.4s ease',

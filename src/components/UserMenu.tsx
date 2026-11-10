@@ -17,8 +17,8 @@ function Avatar({ user }: { user: UserMenuProps['user'] }) {
         alt={user.name ?? 'avatar'}
         referrerPolicy="no-referrer"
         style={{
-          width: 32, height: 32, borderRadius: '50%',
-          border: '2px solid rgba(74,222,128,0.4)',
+          width: 42, height: 42, borderRadius: '50%',
+          border: '2px solid var(--green)',
           objectFit: 'cover',
         }}
       />
@@ -27,11 +27,11 @@ function Avatar({ user }: { user: UserMenuProps['user'] }) {
 
   return (
     <div style={{
-      width: 32, height: 32, borderRadius: '50%',
-      background: 'linear-gradient(135deg, #4ade80 0%, #22d3ee 100%)',
+      width: 42, height: 42, borderRadius: '50%',
+      background: 'var(--green)',
       display: 'flex', alignItems: 'center', justifyContent: 'center',
-      fontSize: 12, fontWeight: 800, color: 'var(--bg)',
-      border: '2px solid rgba(74,222,128,0.4)',
+      fontSize: 14, fontWeight: 800, color: 'var(--on-accent)',
+      border: 'none',
       flexShrink: 0,
     }}>
       {initials}
@@ -147,7 +147,7 @@ export default function UserMenu({ user, onSignOut }: UserMenuProps) {
               width: '100%', padding: '12px 16px',
               background: 'transparent',
               border: 'none',
-              color: signingOut ? 'rgba(248,113,113,0.4)' : '#f87171',
+              color: signingOut ? 'rgba(248,113,113,0.4)' : '#ff6b5e',
               fontSize: 13, fontWeight: 600,
               cursor: signingOut ? 'not-allowed' : 'pointer',
               textAlign: 'left',

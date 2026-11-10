@@ -10,7 +10,7 @@ export default function DayPicker({ currentDay, onSelect, onCancel }: DayPickerP
         padding: '12px 14px',
         background: 'var(--surface)',
         border: '1px solid var(--border-input)',
-        borderRadius: 10,
+        borderRadius: 22,
         display: 'flex',
         flexDirection: 'column',
         gap: 10,
@@ -29,12 +29,12 @@ export default function DayPicker({ currentDay, onSelect, onCancel }: DayPickerP
               onClick={() => onSelect(day)}
               style={{
                 padding: '5px 10px',
-                borderRadius: 7,
+                borderRadius: 999,
                 fontSize: 12,
                 fontWeight: 700,
                 cursor: 'pointer',
                 border: `1.5px solid ${active ? 'var(--green)' : 'var(--border-input)'}`,
-                background: active ? 'rgba(74,222,128,0.15)' : 'var(--surface)',
+                background: active ? 'rgba(185,249,79,0.15)' : 'var(--surface)',
                 color: active ? 'var(--green)' : 'var(--text-secondary)',
                 transition: 'all 0.15s',
               }}
@@ -50,7 +50,7 @@ export default function DayPicker({ currentDay, onSelect, onCancel }: DayPickerP
         style={{
           alignSelf: 'flex-start',
           padding: '4px 10px',
-          borderRadius: 6,
+          borderRadius: 999,
           fontSize: 11,
           fontWeight: 600,
           cursor: 'pointer',

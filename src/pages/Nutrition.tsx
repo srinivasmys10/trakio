@@ -68,7 +68,7 @@ const SUPPLEMENTS: SupplementInfo[] = [
 
 const TIER_COLORS: Record<string, string> = {
   'Strong evidence':    'var(--green)',
-  'Essential for veg':  '#f43f5e',
+  'Essential for veg':  '#ff6b5e',
   'Test first':         'var(--amber)',
   'Recommended':        'var(--blue)',
   'Consider':           'var(--purple)',
@@ -210,7 +210,7 @@ export default function Nutrition() {
                 color: TIER_COLORS[s.tier] ?? 'var(--text-muted)',
                 background: `${TIER_COLORS[s.tier] ?? '#94a3b8'}22`,
                 border: `1px solid ${TIER_COLORS[s.tier] ?? '#94a3b8'}55`,
-                borderRadius: 4, padding: '1px 6px', letterSpacing: '0.06em',
+                borderRadius: 999, padding: '1px 6px', letterSpacing: '0.06em',
               }}>
                 {s.tier.toUpperCase()}
               </span>

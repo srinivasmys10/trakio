@@ -4,66 +4,71 @@
   padding: 0;
 }
 
-/* ─── Dark theme (default) ───────────────────────────────────────────────────── */
+/* ─── Dark theme (default) — black canvas, charcoal cards, lime / orange accents ─ */
 :root {
-  --bg:            #0a0a0f;
-  --bg-header:     #0f0f1a;
-  --bg-card:       rgba(255,255,255,0.04);
-  --bg-input:      rgba(255,255,255,0.05);
-  --bg-nav:        rgba(10,10,15,0.97);
-  --bg-dropdown:   #12121e;
-  --bg-track:      rgba(255,255,255,0.08);
-  --bg-row-alt:    rgba(255,255,255,0.02);
-  --surface:       rgba(255,255,255,0.04);
-  --surface-hover: rgba(255,255,255,0.07);
-  --border:        rgba(255,255,255,0.09);
+  --bg:            #000000;
+  --bg-header:     #000000;
+  --bg-card:       #1c1c1c;
+  --bg-input:      #262626;
+  --bg-nav:        rgba(28,28,28,0.92);
+  --bg-dropdown:   #1c1c1c;
+  --bg-track:      rgba(255,255,255,0.10);
+  --bg-row-alt:    rgba(255,255,255,0.03);
+  --surface:       #1c1c1c;
+  --surface-hover: #2a2a2a;
+  --border:        rgba(255,255,255,0.07);
   --border-input:  rgba(255,255,255,0.14);
-  --border-subtle: rgba(255,255,255,0.05);
-  --text-primary:  #e2e8f0;
-  --text-secondary:rgba(255,255,255,0.55);
-  --text-muted:    rgba(255,255,255,0.35);
+  --border-subtle: rgba(255,255,255,0.04);
+  --text-primary:  #ffffff;
+  --text-secondary:rgba(255,255,255,0.68);
+  --text-muted:    rgba(255,255,255,0.42);
   --text-faint:    rgba(255,255,255,0.20);
-  --checkbox-off:  rgba(255,255,255,0.25);
-  --overlay-dark:  rgba(0,0,0,0.25);
-  --green:         #4ade80;
-  --blue:          #60a5fa;
-  --amber:         #f59e0b;
-  --red:           #f87171;
-  --purple:        #a78bfa;
-  --yellow:        #facc15;
-  --shadow:        0 4px 24px rgba(0,0,0,0.4);
+  --checkbox-off:  rgba(255,255,255,0.28);
+  --overlay-dark:  rgba(0,0,0,0.35);
+  --green:         #b9f94f;   /* lime  — done / primary accent */
+  --blue:          #ffffff;   /* white — selection / neutral highlight */
+  --amber:         #ff9a1f;   /* orange */
+  --red:           #ff6b5e;
+  --purple:        #ff9a1f;
+  --yellow:        #b9f94f;
+  --on-accent:     #0b0b0b;   /* text on lime / white pills */
+  --radius-card:   24px;
+  --radius-pill:   999px;
+  --shadow:        0 10px 30px rgba(0,0,0,0.5);
   --font-mono:     'DM Mono', monospace;
+  --font-display:  'Oswald', 'Arial Narrow', 'Helvetica Neue', sans-serif;
   color-scheme: dark;
 }
 
 /* ─── Light theme ────────────────────────────────────────────────────────────── */
 :root[data-theme="light"] {
-  --bg:            #f1f5f9;
-  --bg-header:     #ffffff;
+  --bg:            #eef0e8;
+  --bg-header:     #eef0e8;
   --bg-card:       #ffffff;
-  --bg-input:      #f8fafc;
-  --bg-nav:        rgba(255,255,255,0.97);
+  --bg-input:      #f3f4ee;
+  --bg-nav:        rgba(255,255,255,0.94);
   --bg-dropdown:   #ffffff;
   --bg-track:      rgba(0,0,0,0.08);
   --bg-row-alt:    rgba(0,0,0,0.02);
   --surface:       #ffffff;
-  --surface-hover: #f1f5f9;
-  --border:        rgba(0,0,0,0.09);
+  --surface-hover: #f3f4ee;
+  --border:        rgba(0,0,0,0.07);
   --border-input:  rgba(0,0,0,0.16);
-  --border-subtle: rgba(0,0,0,0.06);
-  --text-primary:  #0f172a;
-  --text-secondary:#475569;
-  --text-muted:    #94a3b8;
-  --text-faint:    #cbd5e1;
-  --checkbox-off:  rgba(0,0,0,0.25);
+  --border-subtle: rgba(0,0,0,0.05);
+  --text-primary:  #0b0b0b;
+  --text-secondary:rgba(0,0,0,0.65);
+  --text-muted:    rgba(0,0,0,0.42);
+  --text-faint:    rgba(0,0,0,0.2);
+  --checkbox-off:  rgba(0,0,0,0.28);
   --overlay-dark:  rgba(0,0,0,0.05);
-  --green:         #16a34a;
-  --blue:          #2563eb;
-  --amber:         #d97706;
-  --red:           #dc2626;
-  --purple:        #7c3aed;
-  --yellow:        #ca8a04;
-  --shadow:        0 4px 24px rgba(0,0,0,0.10);
+  --green:         #4d9a00;
+  --blue:          #0b0b0b;
+  --amber:         #e07b00;
+  --red:           #d93a2b;
+  --purple:        #e07b00;
+  --yellow:        #4d9a00;
+  --on-accent:     #ffffff;
+  --shadow:        0 8px 24px rgba(0,0,0,0.10);
   color-scheme: light;
 }
 
@@ -97,16 +102,16 @@ input[type="number"] {
   font-family: inherit;
   background: var(--bg-input);
   border: 1px solid var(--border-input);
-  border-radius: 10px;
+  border-radius: 16px;
   color: var(--text-primary);
   font-size: 13px;
-  padding: 10px 12px;
+  padding: 11px 14px;
   outline: none;
   transition: border-color 0.2s;
 }
 textarea { resize: vertical; width: 100%; min-height: 90px; }
 textarea:focus,
-input:focus { border-color: var(--blue); }
+input:focus { border-color: var(--green); }
 
 button { cursor: pointer; font-family: inherit; border: none; outline: none; }
 
@@ -125,3 +130,11 @@ button { cursor: pointer; font-family: inherit; border: none; outline: none; }
 
 .fade-in { animation: fadeIn 0.25s ease forwards; }
 .pulse   { animation: pulse-dot 1.2s ease infinite; }
+
+/* Condensed display type for titles & numerals (like the reference dashboard) */
+.display, h1, h2, h3 {
+  font-family: var(--font-display);
+  text-transform: uppercase;
+  letter-spacing: 0.01em;
+  font-weight: 600;
+}

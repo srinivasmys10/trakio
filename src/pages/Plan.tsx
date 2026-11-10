@@ -14,7 +14,7 @@ function PaceTag({ pace }: { pace: string }) {
   return (
     <span style={{
       background: 'var(--surface-hover)', border: '1px solid var(--border-input)',
-      borderRadius: 4, padding: '2px 7px', fontSize: 11, fontFamily: 'var(--font-mono)',
+      borderRadius: 999, padding: '2px 7px', fontSize: 11, fontFamily: 'var(--font-mono)',
       color: 'var(--text-primary)', letterSpacing: '0.03em',
     }}>{pace} /km</span>
   )
@@ -25,9 +25,9 @@ function DateLabel({ children, onClick }: { children: React.ReactNode; onClick?:
     <span onClick={onClick} title={onClick ? 'Change day' : undefined} style={{
       fontSize: 10, fontWeight: 600,
       color: onClick ? 'var(--blue)' : 'var(--text-muted)',
-      background: onClick ? 'rgba(96,165,250,0.1)' : 'var(--bg-input)',
-      border: `1px solid ${onClick ? 'rgba(96,165,250,0.3)' : 'var(--border)'}`,
-      borderRadius: 4, padding: '1px 6px', whiteSpace: 'nowrap',
+      background: onClick ? 'rgba(255,255,255,0.1)' : 'var(--bg-input)',
+      border: `1px solid ${onClick ? 'rgba(255,255,255,0.3)' : 'var(--border)'}`,
+      borderRadius: 999, padding: '1px 6px', whiteSpace: 'nowrap',
       fontFamily: 'var(--font-mono)', cursor: onClick ? 'pointer' : 'default',
       userSelect: 'none', display: 'inline-flex', alignItems: 'center', gap: 4,
     }}>
@@ -81,7 +81,7 @@ export default function Plan({ progress, gymSplits, onToggle, onSaveNote, onSave
           <div style={{
             display: 'flex', alignItems: 'center', gap: 8, marginBottom: 10,
             padding: '8px 12px', background: `${pc.border}11`,
-            border: `1px solid ${pc.border}33`, borderRadius: 8,
+            border: `1px solid ${pc.border}33`, borderRadius: 14,
           }}>
             <span style={{ fontSize: 14 }}>📅</span>
             <span style={{ fontSize: 12, fontWeight: 700, color: pc.text }}>{weekDateRange(weekData.week)}</span>
@@ -108,9 +108,9 @@ export default function Plan({ progress, gymSplits, onToggle, onSaveNote, onSave
 
             return (
               <div key={i} style={{
-                background: done ? 'rgba(74,222,128,0.05)' : isRace ? 'rgba(251,191,36,0.06)' : 'var(--surface)',
-                border: `1.5px solid ${done ? 'rgba(74,222,128,0.3)' : isRace ? 'rgba(251,191,36,0.35)' : 'var(--border)'}`,
-                borderRadius: 12, padding: 14, marginBottom: 10, transition: 'all 0.2s',
+                background: done ? 'rgba(185,249,79,0.05)' : isRace ? 'rgba(251,191,36,0.06)' : 'var(--surface)',
+                border: `1.5px solid ${done ? 'rgba(185,249,79,0.3)' : isRace ? 'rgba(251,191,36,0.35)' : 'var(--border)'}`,
+                borderRadius: 22, padding: 14, marginBottom: 10, transition: 'all 0.2s',
               }}>
                 <div style={{ display: 'flex', gap: 12, alignItems: 'flex-start' }}>
                   <CheckBox checked={done} onChange={() => onToggle(key)} />
@@ -156,9 +156,9 @@ export default function Plan({ progress, gymSplits, onToggle, onSaveNote, onSave
 
                 return (
                   <div key={i} style={{
-                    background: done ? 'rgba(74,222,128,0.05)' : 'var(--surface)',
-                    border: `1.5px solid ${done ? 'rgba(74,222,128,0.3)' : 'var(--border)'}`,
-                    borderRadius: 12, marginBottom: 10, overflow: 'hidden', transition: 'border-color 0.2s',
+                    background: done ? 'rgba(185,249,79,0.05)' : 'var(--surface)',
+                    border: `1.5px solid ${done ? 'rgba(185,249,79,0.3)' : 'var(--border)'}`,
+                    borderRadius: 22, marginBottom: 10, overflow: 'hidden', transition: 'border-color 0.2s',
                   }}>
                     <div style={{ padding: 14, display: 'flex', alignItems: 'center', gap: 12 }}>
                       <CheckBox checked={done} onChange={() => onToggle(key)} />
@@ -172,7 +172,7 @@ export default function Plan({ progress, gymSplits, onToggle, onSaveNote, onSave
                       </div>
                       <button onClick={() => setExpandedGym(isExpanded ? null : expandKey)} style={{
                         background: 'var(--surface-hover)', border: '1px solid var(--border)',
-                        borderRadius: 6, color: 'var(--text-muted)', padding: '4px 10px',
+                        borderRadius: 999, color: 'var(--text-muted)', padding: '4px 10px',
                         fontSize: 12, fontWeight: 600, cursor: 'pointer', whiteSpace: 'nowrap',
                       }}>
                         {isExpanded ? '▲ Hide' : '▼ Exercises'}
@@ -213,9 +213,9 @@ export default function Plan({ progress, gymSplits, onToggle, onSaveNote, onSave
           />
           <button onClick={handleSaveNote} style={{
             marginTop: 8,
-            background: savedNote ? 'rgba(74,222,128,0.18)' : 'var(--surface-hover)',
+            background: savedNote ? 'rgba(185,249,79,0.18)' : 'var(--surface-hover)',
             border: `1px solid ${savedNote ? 'var(--green)' : 'var(--border)'}`,
-            borderRadius: 8, color: savedNote ? 'var(--green)' : 'var(--text-primary)',
+            borderRadius: 999, color: savedNote ? 'var(--green)' : 'var(--text-primary)',
             padding: '9px 20px', fontSize: 13, fontWeight: 600, cursor: 'pointer', transition: 'all 0.2s',
           }}>
             {savedNote ? '✓ Saved to Supabase!' : 'Save Note'}

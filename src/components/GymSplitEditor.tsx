@@ -43,7 +43,7 @@ function AddExerciseForm({ onSave, onCancel, saving }: AddFormProps) {
         style={{
           background: 'var(--surface-hover)',
           border: '1px solid var(--border-input)',
-          borderRadius: 7,
+          borderRadius: 16,
           color: 'var(--text-primary)',
           fontSize: 13,
           padding: '7px 10px',
@@ -71,9 +71,9 @@ function AddExerciseForm({ onSave, onCancel, saving }: AddFormProps) {
     <div style={{
       marginTop: 12,
       padding: '14px 16px',
-      background: 'rgba(96,165,250,0.06)',
-      border: '1px solid rgba(96,165,250,0.25)',
-      borderRadius: 10,
+      background: 'rgba(255,255,255,0.06)',
+      border: '1px solid rgba(255,255,255,0.25)',
+      borderRadius: 22,
       display: 'flex',
       flexDirection: 'column',
       gap: 10,
@@ -104,12 +104,12 @@ function AddExerciseForm({ onSave, onCancel, saving }: AddFormProps) {
           disabled={saving}
           style={{
             padding: '8px 18px',
-            borderRadius: 8,
+            borderRadius: 999,
             fontSize: 13,
             fontWeight: 700,
             cursor: saving ? 'not-allowed' : 'pointer',
             border: 'none',
-            background: saving ? 'rgba(74,222,128,0.2)' : 'var(--green)',
+            background: saving ? 'rgba(185,249,79,0.2)' : 'var(--green)',
             color: saving ? 'var(--green)' : 'var(--bg)',
             opacity: saving ? 0.7 : 1,
             transition: 'all 0.2s',
@@ -121,7 +121,7 @@ function AddExerciseForm({ onSave, onCancel, saving }: AddFormProps) {
           onClick={onCancel}
           style={{
             padding: '8px 14px',
-            borderRadius: 8,
+            borderRadius: 999,
             fontSize: 13,
             fontWeight: 600,
             cursor: 'pointer',
@@ -195,7 +195,7 @@ export default function GymSplitEditor({ splitName, gymSplits, onRefetch }: GymS
           onClick={() => { setEditMode((v) => !v); setShowAddForm(false) }}
           style={{
             padding: '4px 12px',
-            borderRadius: 6,
+            borderRadius: 999,
             fontSize: 11,
             fontWeight: 700,
             cursor: 'pointer',
@@ -261,7 +261,7 @@ export default function GymSplitEditor({ splitName, gymSplits, onRefetch }: GymS
                         style={{
                           background: 'rgba(248,113,113,0.12)',
                           border: '1px solid rgba(248,113,113,0.3)',
-                          borderRadius: 6,
+                          borderRadius: '50%',
                           color: 'var(--red)',
                           fontSize: 14,
                           width: 28,
@@ -306,12 +306,12 @@ export default function GymSplitEditor({ splitName, gymSplits, onRefetch }: GymS
                 alignItems: 'center',
                 gap: 6,
                 padding: '8px 14px',
-                borderRadius: 8,
+                borderRadius: 999,
                 fontSize: 12,
                 fontWeight: 700,
                 cursor: 'pointer',
-                border: '1px dashed rgba(74,222,128,0.4)',
-                background: 'rgba(74,222,128,0.05)',
+                border: '1px dashed rgba(185,249,79,0.4)',
+                background: 'rgba(185,249,79,0.05)',
                 color: 'var(--green)',
                 width: '100%',
                 justifyContent: 'center',

@@ -6,8 +6,8 @@ export default function Card({ children, style = {}, accent }: CardProps) {
       style={{
         background: 'var(--surface)',
         border: `1px solid ${accent ? `${accent}44` : 'var(--border)'}`,
-        borderRadius: 14,
-        padding: 16,
+        borderRadius: 24,
+        padding: 18,
         marginBottom: 14,
         ...style,
       }}

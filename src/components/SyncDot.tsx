@@ -8,9 +8,9 @@ interface StatusConfig {
 
 const STATUS_CONFIG: Record<SyncStatus, StatusConfig> = {
   idle:   { color: 'var(--text-faint)', label: null,                   glow: false },
-  saving: { color: '#f59e0b',               label: 'Syncing to Supabase…', glow: true  },
-  saved:  { color: '#4ade80',               label: 'Saved to Supabase ✓',  glow: false },
-  error:  { color: '#f87171',               label: '⚠ Sync error',         glow: false },
+  saving: { color: '#ff9a1f',               label: 'Syncing to Supabase…', glow: true  },
+  saved:  { color: '#b9f94f',               label: 'Saved to Supabase ✓',  glow: false },
+  error:  { color: '#ff6b5e',               label: '⚠ Sync error',         glow: false },
 }
 
 export default function SyncDot({ status }: SyncDotProps) {

@@ -20,12 +20,9 @@ const DAY_LABELS  = ['Mon','','Wed','','Fri','','Sun']
 function cellColor(day: DailyActivity | undefined, inRange: boolean): string {
   if (!inRange) return 'transparent'
   if (!day || day.exerciseCount === 0) return 'var(--bg-track)'
-  if (day.completedCount === 0) return 'rgba(74,222,128,0.15)'
-  const r = day.completedCount / day.exerciseCount
-  if (r < 0.34) return 'rgba(74,222,128,0.30)'
-  if (r < 0.67) return 'rgba(74,222,128,0.55)'
-  if (r < 1.00) return 'rgba(74,222,128,0.80)'
-  return '#4ade80'
+  if (day.completedCount === 0) return 'rgba(255,154,31,0.55)'   // planned  → orange
+  if (day.completedCount < day.exerciseCount && !day.dayFullyDone) return 'rgba(255,255,255,0.85)'  // partial → white
+  return '#b9f94f'                                                // done     → lime
 }
 
 function cellLabel(day: DailyActivity | undefined): string {
@@ -200,7 +197,7 @@ export default function WorkoutCalendar() {
   const actMap    = new Map(activity.map(d => [d.date, d]))
   const todayISO  = localISO(today)
 
-  const CELL = 13, GAP = 2   // cell size and gap in px
+  const CELL = 13, GAP = 3   // cell size and gap in px
 
   const periodLabel = `${MONTH_SHORT[periodStart.getMonth()]} ${periodStart.getFullYear()} – ${MONTH_SHORT[periodEnd.getMonth()]} ${periodEnd.getFullYear()}`
 
@@ -241,36 +238,36 @@ export default function WorkoutCalendar() {
     <div className="fade-in">
 
       {/* ── Stats ── */}
-      <div style={{ display:'grid', gridTemplateColumns:'repeat(4,1fr)', gap:8, marginBottom:18 }}>
+      <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:10, marginBottom:12 }}>
         {[
-          { label:'Active Days',  value:stats.totalDays,          icon:'📅', color:'var(--blue)'   },
-          { label:'Exercises',    value:stats.totalExercises,     icon:'💪', color:'var(--purple)' },
-          { label:'Streak',       value:`${stats.streak}d`,       icon:'🔥', color:'var(--amber)'  },
-          { label:'Best Streak',  value:`${stats.longestStreak}d`,icon:'🏆', color:'var(--yellow)' },
+          { label:'Active Days',  value:stats.totalDays,           sub:'all time',        color:'var(--green)' },
+          { label:'Exercises',    value:stats.totalExercises,      sub:'completed',       color:'var(--text-primary)' },
+          { label:'Streak',       value:`${stats.streak}d`,        sub:'current',         color:'var(--amber)' },
+          { label:'Best Streak',  value:`${stats.longestStreak}d`, sub:'longest run',     color:'var(--green)' },
         ].map(s => (
-          <div key={s.label} style={{ background:'var(--surface)', border:'1px solid var(--border)', borderRadius:12, padding:'10px 8px', textAlign:'center' }}>
-            <div style={{ fontSize:16, marginBottom:2 }}>{s.icon}</div>
-            <div style={{ fontSize:18, fontWeight:800, color:s.color, lineHeight:1 }}>{s.value}</div>
-            <div style={{ fontSize:9, color:'var(--text-muted)', marginTop:3, textTransform:'uppercase', letterSpacing:'0.06em' }}>{s.label}</div>
+          <div key={s.label} style={{ background:'var(--surface)', borderRadius:24, padding:'16px 18px' }}>
+            <div className="display" style={{ fontSize:13, color:'var(--text-secondary)' }}>{s.label}</div>
+            <div className="display" style={{ fontSize:44, lineHeight:1.05, color:s.color, marginTop:8 }}>{s.value}</div>
+            <div style={{ fontSize:11, color:'var(--text-muted)', marginTop:2 }}>{s.sub}</div>
           </div>
         ))}
       </div>
 
       {/* ── Heatmap card ── */}
-      <div style={{ background:'var(--surface)', border:'1px solid var(--border)', borderRadius:14, padding:'14px 12px 12px', overflowX:'auto' }}>
+      <div style={{ background:'var(--surface)', borderRadius:24, padding:'18px 16px 16px', overflowX:'auto' }}>
 
         {/* Period nav */}
         <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:14 }}>
-          <button onClick={goBack} style={{ background:'var(--bg-input)', border:'1px solid var(--border)', borderRadius:7, color:'var(--text-secondary)', padding:'4px 12px', cursor:'pointer', fontSize:16, fontWeight:700 }}>‹</button>
+          <button onClick={goBack} style={{ background:'var(--bg-input)', border:'none', borderRadius:999, color:'var(--text-primary)', width:34, height:34, cursor:'pointer', fontSize:18, fontWeight:700 }}>‹</button>
 
           <div style={{ textAlign:'center' }}>
-            <div style={{ fontSize:12, fontWeight:700, color:'var(--text-primary)' }}>{periodLabel}</div>
+            <div className="display" style={{ fontSize:16, color:'var(--text-primary)' }}>{periodLabel}</div>
             <div style={{ fontSize:10, color:'var(--text-muted)', marginTop:2 }}>
               {periodDays} active day{periodDays!==1?'s':''} · {periodEx} exercise{periodEx!==1?'s':''}
             </div>
           </div>
 
-          <button onClick={goForward} disabled={isCurrentPeriod} style={{ background:isCurrentPeriod?'transparent':'var(--bg-input)', border:`1px solid ${isCurrentPeriod?'transparent':'var(--border)'}`, borderRadius:7, color:isCurrentPeriod?'var(--text-faint)':'var(--text-secondary)', padding:'4px 12px', cursor:isCurrentPeriod?'default':'pointer', fontSize:16, fontWeight:700 }}>›</button>
+          <button onClick={goForward} disabled={isCurrentPeriod} style={{ background:isCurrentPeriod?'transparent':'var(--bg-input)', border:'none', borderRadius:999, color:isCurrentPeriod?'var(--text-faint)':'var(--text-primary)', width:34, height:34, cursor:isCurrentPeriod?'default':'pointer', fontSize:18, fontWeight:700 }}>›</button>
         </div>
 
         {/* Grid — position:relative so tooltip is anchored here */}
@@ -320,10 +317,10 @@ export default function WorkoutCalendar() {
                         onMouseEnter={e => handleCellEnter(e, cell, day)}
                         onMouseLeave={() => setTooltip(null)}
                         style={{
-                          width:CELL, height:CELL, borderRadius:3,
+                          width:CELL, height:CELL, borderRadius:'50%',
                           background:color,
                           border: isToday
-                            ? '2px solid var(--green)'
+                            ? '2px solid var(--text-primary)'
                             : cell.inRange ? '1px solid rgba(128,128,128,0.08)' : 'none',
                           cursor: cell.inRange ? 'pointer' : 'default',
                           flexShrink:0, boxSizing:'border-box',
@@ -364,23 +361,16 @@ export default function WorkoutCalendar() {
         </div>
 
         {/* Legend */}
-        <div style={{ display:'flex', alignItems:'center', gap:5, marginTop:12, justifyContent:'flex-end' }}>
-          <span style={{ fontSize:9, color:'var(--text-muted)' }}>Less</span>
-          {['var(--bg-track)','rgba(74,222,128,0.15)','rgba(74,222,128,0.30)','rgba(74,222,128,0.55)','rgba(74,222,128,0.80)','#4ade80'].map((c,i) => (
-            <div key={i} style={{ width:CELL, height:CELL, borderRadius:3, background:c, border:'1px solid rgba(128,128,128,0.1)' }} />
-          ))}
-          <span style={{ fontSize:9, color:'var(--text-muted)' }}>More</span>
-        </div>
-        <div style={{ display:'flex', gap:10, marginTop:6, flexWrap:'wrap' }}>
+        <div style={{ display:'flex', gap:14, marginTop:14, flexWrap:'wrap' }}>
           {[
-            { color:'var(--bg-track)',         label:'No workout' },
-            { color:'rgba(74,222,128,0.15)',    label:'Planned' },
-            { color:'rgba(74,222,128,0.55)',    label:'Partial' },
-            { color:'#4ade80',                  label:'Full ✓' },
+            { color:'var(--bg-track)',          label:'No workout' },
+            { color:'rgba(255,154,31,0.55)',    label:'Planned' },
+            { color:'rgba(255,255,255,0.85)',   label:'Partial' },
+            { color:'#b9f94f',                  label:'Done' },
           ].map(item => (
-            <div key={item.label} style={{ display:'flex', alignItems:'center', gap:4 }}>
-              <div style={{ width:10, height:10, borderRadius:2, background:item.color, border:'1px solid rgba(128,128,128,0.1)' }} />
-              <span style={{ fontSize:9, color:'var(--text-muted)' }}>{item.label}</span>
+            <div key={item.label} style={{ display:'flex', alignItems:'center', gap:6 }}>
+              <div style={{ width:10, height:10, borderRadius:'50%', background:item.color }} />
+              <span style={{ fontSize:11, color:'var(--text-secondary)' }}>{item.label}</span>
             </div>
           ))}
         </div>
@@ -388,7 +378,7 @@ export default function WorkoutCalendar() {
 
       {/* ── Recent sessions ── */}
       <div style={{ marginTop:18 }}>
-        <div style={{ fontSize:11, fontWeight:700, color:'var(--text-muted)', textTransform:'uppercase', letterSpacing:'0.08em', marginBottom:10 }}>
+        <div className="display" style={{ fontSize:18, color:'var(--text-primary)', margin:'6px 4px 12px' }}>
           Recent Sessions
         </div>
 
@@ -396,9 +386,9 @@ export default function WorkoutCalendar() {
           const dt  = parseISO(d.date)
           const pct = Math.round((d.completedCount / d.exerciseCount) * 100)
           return (
-            <div key={d.date} style={{ display:'flex', alignItems:'center', gap:10, padding:'8px 12px', marginBottom:5, background:'var(--surface)', border:'1px solid var(--border)', borderRadius:9 }}>
+            <div key={d.date} style={{ display:'flex', alignItems:'center', gap:10, padding:'12px 16px', marginBottom:8, background:'var(--surface)', borderRadius:24 }}>
               <div style={{ flexShrink:0, textAlign:'center', width:34 }}>
-                <div style={{ fontSize:15, fontWeight:800, color:'var(--text-primary)', lineHeight:1 }}>{dt.getDate()}</div>
+                <div className="display" style={{ fontSize:22, color:'var(--text-primary)', lineHeight:1 }}>{dt.getDate()}</div>
                 <div style={{ fontSize:9, color:'var(--text-muted)', textTransform:'uppercase' }}>{MONTH_SHORT[dt.getMonth()]}</div>
               </div>
               <div style={{ flex:1, minWidth:0 }}>
@@ -406,11 +396,11 @@ export default function WorkoutCalendar() {
                   <span style={{ fontSize:11, color:'var(--text-secondary)', fontWeight:600 }}>{['Sun','Mon','Tue','Wed','Thu','Fri','Sat'][dt.getDay()]}</span>
                   <span style={{ fontSize:10, color:d.dayFullyDone?'var(--green)':'var(--text-muted)', fontWeight:700 }}>{d.completedCount}/{d.exerciseCount}{d.dayFullyDone?' ✓':''}</span>
                 </div>
-                <div style={{ height:4, background:'var(--bg-track)', borderRadius:2, overflow:'hidden' }}>
-                  <div style={{ height:'100%', width:`${pct}%`, background:d.dayFullyDone?'var(--green)':'rgba(74,222,128,0.55)', borderRadius:2, transition:'width 0.4s' }} />
+                <div style={{ height:10, background:'var(--bg-track)', borderRadius:999, overflow:'hidden' }}>
+                  <div style={{ height:'100%', width:`${pct}%`, background:d.dayFullyDone?'var(--green)':'var(--amber)', borderRadius:999, transition:'width 0.4s' }} />
                 </div>
               </div>
-              <div style={{ flexShrink:0, fontSize:10, fontWeight:700, padding:'2px 7px', borderRadius:5, background:d.dayFullyDone?'rgba(74,222,128,0.12)':'rgba(245,158,11,0.1)', color:d.dayFullyDone?'var(--green)':'var(--amber)', border:`1px solid ${d.dayFullyDone?'rgba(74,222,128,0.3)':'rgba(245,158,11,0.25)'}` }}>
+              <div style={{ flexShrink:0, fontSize:10, fontWeight:700, padding:'3px 10px', borderRadius:999, background:d.dayFullyDone?'var(--green)':'var(--amber)', color:'var(--on-accent)', border:'none' }}>
                 {pct}%
               </div>
             </div>
