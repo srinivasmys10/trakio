@@ -338,6 +338,7 @@ function DayWorkout({
   const [showPicker, setShowPicker] = useState(false)
   const [searchQ,    setSearchQ]    = useState('')
   const [selectedRaw, setSelected]  = useState<Set<number>>(new Set())
+  const [infoOpen,   setInfoOpen]   = useState<Set<number>>(new Set())
   const [notice,     setNotice]     = useState<{ text: string; error?: boolean } | null>(null)
 
   useEffect(() => {
@@ -548,7 +549,21 @@ function DayWorkout({
                             also {slot.exercise.impact_areas.slice(1, 4).join(' · ')}
                           </div>
                         )}
+                        {infoOpen.has(slot.id) && (
+                          <div style={{ fontSize: 12, lineHeight: 1.5, color: 'var(--text-secondary)', marginTop: 8, paddingTop: 8, borderTop: `1px solid ${info.border}`, whiteSpace: 'pre-wrap' }}>
+                            {slot.exercise.description}
+                          </div>
+                        )}
                       </div>
+
+                      {slot.exercise.description.trim() && (
+                        <button
+                          onClick={e => { e.stopPropagation(); setInfoOpen(prev => { const n = new Set(prev); if (n.has(slot.id)) n.delete(slot.id); else n.add(slot.id); return n }) }}
+                          aria-label={infoOpen.has(slot.id) ? 'Hide description' : 'Show description'}
+                          aria-expanded={infoOpen.has(slot.id)}
+                          style={{ background: infoOpen.has(slot.id) ? 'rgba(96,165,250,0.15)' : 'transparent', border: '1px solid var(--border)', borderRadius: 6, color: 'var(--blue)', fontSize: 13, fontWeight: 700, fontStyle: 'italic', width: 26, height: 26, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, fontFamily: 'serif' }}
+                        >i</button>
+                      )}
 
                       {sel && <span style={{ color: 'var(--blue)', fontSize: 13, fontWeight: 800, flexShrink: 0, lineHeight: '26px' }}>●</span>}
 
