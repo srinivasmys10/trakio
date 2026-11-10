@@ -52,8 +52,8 @@ export default function Recovery() {
           >
             <span style={{
               fontSize: 11, fontWeight: 700, color: 'var(--green)',
-              background: 'rgba(74,222,128,0.12)', border: '1px solid rgba(74,222,128,0.3)',
-              borderRadius: 4, padding: '1px 6px', flexShrink: 0, marginTop: 1,
+              background: 'rgba(185,249,79,0.12)', border: '1px solid rgba(185,249,79,0.3)',
+              borderRadius: 999, padding: '1px 6px', flexShrink: 0, marginTop: 1,
             }}>
               {i + 1}
             </span>
@@ -78,8 +78,8 @@ export default function Recovery() {
           >
             <span style={{
               fontSize: 11, fontWeight: 700, color: 'var(--blue)',
-              background: 'rgba(96,165,250,0.12)', border: '1px solid rgba(96,165,250,0.3)',
-              borderRadius: 4, padding: '1px 6px', flexShrink: 0, marginTop: 1,
+              background: 'rgba(255,255,255,0.12)', border: '1px solid rgba(255,255,255,0.3)',
+              borderRadius: 999, padding: '1px 6px', flexShrink: 0, marginTop: 1,
             }}>
               {i + 1}
             </span>
@@ -90,7 +90,7 @@ export default function Recovery() {
 
       {/* Rest day guidance */}
       <SectionTitle style={{ marginTop: 8 }}>Rest Day Guidance</SectionTitle>
-      <Card style={{ background: 'rgba(96,165,250,0.05)', borderColor: 'rgba(96,165,250,0.2)' }}>
+      <Card style={{ background: 'rgba(255,255,255,0.05)', borderColor: 'rgba(255,255,255,0.2)' }}>
         {REST_TIPS.map((item, i) => (
           <div
             key={i}

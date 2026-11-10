@@ -5,10 +5,10 @@ export default function Tag({ children, color = '#94a3b8', style = {} }: TagProp
     <span
       style={{
         display: 'inline-block',
-        background: `${color}22`,
-        border: `1px solid ${color}66`,
-        borderRadius: 6,
-        padding: '2px 8px',
+        background: `color-mix(in srgb, ${color} 16%, transparent)`,
+        border: 'none',
+        borderRadius: 999,
+        padding: '3px 11px',
         fontSize: 11,
         fontWeight: 700,
         color,

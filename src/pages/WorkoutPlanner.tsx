@@ -46,7 +46,7 @@ const AREA_ORDER = [
 ]
 
 const areaKey   = (ex: ExerciseLibraryItem) => (ex.impact_areas[0] ?? '').trim().toLowerCase()
-const areaLabel = (k: string) => k ? k.replace(/\b\w/g, c => c.toUpperCase()) : 'Untagged'
+const areaLabel = (k: string) => k ? k.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase()) : 'Untagged'
 
 function groupByArea<T>(items: T[], get: (t: T) => ExerciseLibraryItem): { key: string; label: string; items: T[] }[] {
   const map = new Map<string, T[]>()
@@ -64,11 +64,12 @@ function groupByArea<T>(items: T[], get: (t: T) => ExerciseLibraryItem): { key: 
     .map(([key, items]) => ({ key, label: areaLabel(key), items }))
 }
 
-function AreaHeader({ label, count, size = 10 }: { label: string; count: number; size?: number }) {
+function AreaHeader({ label, count }: { label: string; count: number; size?: number }) {
   return (
-    <div style={{ display: 'flex', alignItems: 'center', gap: 6, margin: '8px 2px 5px' }}>
-      <span style={{ fontSize: size, fontWeight: 800, color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>{label}</span>
-      <span style={{ fontSize: 10, color: 'var(--text-muted)' }}>{count}</span>
+    <div style={{ display: 'flex', alignItems: 'center', gap: 8, margin: '14px 4px 8px' }}>
+      <span style={{ width: 8, height: 8, borderRadius: '50%', background: 'var(--green)', flexShrink: 0 }} />
+      <span className="display" style={{ fontSize: 15, color: 'var(--text-primary)' }}>{label}</span>
+      <span style={{ fontSize: 11, fontWeight: 700, color: 'var(--on-accent)', background: 'var(--text-secondary)', borderRadius: 999, padding: '1px 8px' }}>{count}</span>
       <div style={{ flex: 1, height: 1, background: 'var(--border)' }} />
     </div>
   )
@@ -78,8 +79,8 @@ function AreaHeader({ label, count, size = 10 }: { label: string; count: number;
 
 const fs = (): React.CSSProperties => ({
   background: 'var(--bg-input)', border: '1px solid var(--border-input)',
-  borderRadius: 8, color: 'var(--text-primary)', fontSize: 13,
-  padding: '9px 12px', outline: 'none', fontFamily: 'inherit',
+  borderRadius: 16, color: 'var(--text-primary)', fontSize: 13,
+  padding: '11px 14px', outline: 'none', fontFamily: 'inherit',
   width: '100%', boxSizing: 'border-box',
 })
 
@@ -128,7 +129,7 @@ function ExerciseForm({ initial, saving, onSave, onCancel }: ExerciseFormProps) 
   }
 
   const selBtn = (active: boolean, color: string): React.CSSProperties => ({
-    padding: '4px 10px', borderRadius: 7, fontSize: 11, fontWeight: 700,
+    padding: '6px 12px', borderRadius: 999, fontSize: 11, fontWeight: 700,
     cursor: 'pointer', fontFamily: 'inherit', transition: 'all 0.15s',
     border: `1.5px solid ${active ? color : 'var(--border)'}`,
     background: active ? `${color}22` : 'var(--bg-input)',
@@ -182,7 +183,7 @@ function ExerciseForm({ initial, saving, onSave, onCancel }: ExerciseFormProps) 
       {err && <div style={{ fontSize: 12, color: 'var(--red)' }}>⚠ {err}</div>}
 
       <div style={{ display: 'flex', gap: 8 }}>
-        <button type="submit" disabled={saving} style={{ flex: 1, padding: '10px 0', borderRadius: 9, fontSize: 13, fontWeight: 700, border: 'none', cursor: saving ? 'not-allowed' : 'pointer', background: saving ? 'rgba(74,222,128,0.15)' : 'var(--green)', color: 'var(--bg)' }}>
+        <button type="submit" disabled={saving} style={{ flex: 1, padding: '10px 0', borderRadius: 9, fontSize: 13, fontWeight: 700, border: 'none', cursor: saving ? 'not-allowed' : 'pointer', background: saving ? 'rgba(185,249,79,0.15)' : 'var(--green)', color: 'var(--on-accent)' }}>
           {saving ? 'Saving…' : initial ? 'Update Exercise' : 'Add to Library'}
         </button>
         <button type="button" onClick={onCancel} style={{ padding: '10px 14px', borderRadius: 9, fontSize: 13, fontWeight: 600, border: '1px solid var(--border)', background: 'transparent', color: 'var(--text-muted)', cursor: 'pointer' }}>
@@ -218,7 +219,7 @@ function LibraryPanel({ exercises, saving, onAdd, onUpdate, onRemove }: {
     const info = EXERCISE_TYPE_LABELS[ex.exercise_type]
     const open = expanded === ex.id
     return (
-      <div key={ex.id} style={{ background: info.bg, border: `1px solid ${info.border}`, borderRadius: 10, marginBottom: 7, overflow: 'hidden' }}>
+      <div key={ex.id} style={{ background: 'var(--surface)', borderRadius: 22, marginBottom: 8, overflow: 'hidden' }}>
         <div onClick={() => setExpanded(open ? null : ex.id)} style={{ padding: '10px 12px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 10 }}>
           <span style={{ fontSize: 16, flexShrink: 0 }}>{info.icon}</span>
           <div style={{ flex: 1, minWidth: 0 }}>
@@ -230,8 +231,8 @@ function LibraryPanel({ exercises, saving, onAdd, onUpdate, onRemove }: {
             </div>
           </div>
           <div style={{ display: 'flex', gap: 5, flexShrink: 0 }}>
-            <button onClick={e => { e.stopPropagation(); setEditItem(ex); setShowForm(false) }} style={{ background: 'rgba(96,165,250,0.1)', border: '1px solid rgba(96,165,250,0.3)', borderRadius: 6, color: 'var(--blue)', fontSize: 11, padding: '3px 8px', cursor: 'pointer' }}>✏</button>
-            <button onClick={async e => { e.stopPropagation(); if (window.confirm(`Delete "${ex.name}"? This removes it from all workout plans.`)) await onRemove(ex.id, ex.audio_url) }} style={{ background: 'rgba(248,113,113,0.1)', border: '1px solid rgba(248,113,113,0.25)', borderRadius: 6, color: 'var(--red)', fontSize: 11, padding: '3px 8px', cursor: 'pointer' }}>🗑</button>
+            <button onClick={e => { e.stopPropagation(); setEditItem(ex); setShowForm(false) }} style={{ background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.3)', borderRadius: 999, color: 'var(--blue)', fontSize: 11, padding: '5px 10px', cursor: 'pointer' }}>✏</button>
+            <button onClick={async e => { e.stopPropagation(); if (window.confirm(`Delete "${ex.name}"? This removes it from all workout plans.`)) await onRemove(ex.id, ex.audio_url) }} style={{ background: 'rgba(248,113,113,0.1)', border: '1px solid rgba(248,113,113,0.25)', borderRadius: 999, color: 'var(--red)', fontSize: 11, padding: '5px 10px', cursor: 'pointer' }}>🗑</button>
             <span style={{ color: 'var(--text-muted)', fontSize: 14, lineHeight: '24px' }}>{open ? '▲' : '▼'}</span>
           </div>
         </div>
@@ -241,7 +242,7 @@ function LibraryPanel({ exercises, saving, onAdd, onUpdate, onRemove }: {
             {ex.impact_areas.length > 0 && (
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: 5 }}>
                 {ex.impact_areas.map(a => (
-                  <span key={a} style={{ fontSize: 10, fontWeight: 600, color: info.color, background: `${info.color}18`, border: `1px solid ${info.border}`, borderRadius: 5, padding: '2px 7px' }}>{a}</span>
+                  <span key={a} style={{ fontSize: 10, fontWeight: 600, color: info.color, background: `${info.color}18`, border: `1px solid ${info.border}`, borderRadius: 999, padding: '3px 10px' }}>{a}</span>
                 ))}
               </div>
             )}
@@ -266,18 +267,18 @@ function LibraryPanel({ exercises, saving, onAdd, onUpdate, onRemove }: {
 
       {/* Type filter + Add */}
       <div style={{ display: 'flex', gap: 5, flexWrap: 'wrap', marginBottom: 14, alignItems: 'center' }}>
-        <button onClick={() => setFilterType('all')} style={{ padding: '4px 10px', borderRadius: 7, fontSize: 11, fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit', border: `1.5px solid ${filterType === 'all' ? 'var(--text-secondary)' : 'var(--border)'}`, background: filterType === 'all' ? 'rgba(100,100,100,0.12)' : 'var(--surface)', color: filterType === 'all' ? 'var(--text-secondary)' : 'var(--text-muted)' }}>All</button>
+        <button onClick={() => setFilterType('all')} style={{ padding: '6px 12px', borderRadius: 999, fontSize: 11, fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit', border: `1.5px solid ${filterType === 'all' ? 'var(--text-secondary)' : 'var(--border)'}`, background: filterType === 'all' ? 'rgba(100,100,100,0.12)' : 'var(--surface)', color: filterType === 'all' ? 'var(--text-secondary)' : 'var(--text-muted)' }}>All</button>
         {EXERCISE_TYPES.map(et => {
           const info   = EXERCISE_TYPE_LABELS[et]
           const active = filterType === et
-          return <button key={et} onClick={() => setFilterType(et)} style={{ padding: '4px 10px', borderRadius: 7, fontSize: 11, fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit', border: `1.5px solid ${active ? info.color : 'var(--border)'}`, background: active ? `${info.color}18` : 'var(--surface)', color: active ? info.color : 'var(--text-muted)' }}>{info.icon}</button>
+          return <button key={et} onClick={() => setFilterType(et)} style={{ padding: '6px 12px', borderRadius: 999, fontSize: 11, fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit', border: `1.5px solid ${active ? info.color : 'var(--border)'}`, background: active ? `${info.color}18` : 'var(--surface)', color: active ? info.color : 'var(--text-muted)' }}>{info.icon}</button>
         })}
-        <button onClick={() => { setShowForm(true); setEditItem(null) }} style={{ marginLeft: 'auto', padding: '5px 12px', borderRadius: 7, fontSize: 12, fontWeight: 700, border: '1px solid rgba(74,222,128,0.4)', background: 'rgba(74,222,128,0.08)', color: 'var(--green)', cursor: 'pointer', fontFamily: 'inherit' }}>+ New Exercise</button>
+        <button onClick={() => { setShowForm(true); setEditItem(null) }} style={{ marginLeft: 'auto', padding: '8px 16px', borderRadius: 999, fontSize: 12, fontWeight: 700, border: 'none', background: 'var(--green)', color: 'var(--on-accent)', cursor: 'pointer', fontFamily: 'inherit' }}>+ New Exercise</button>
       </div>
 
       {/* Add/Edit form */}
       {(showForm || editItem) && (
-        <Card style={{ marginBottom: 14, borderColor: editItem ? 'rgba(96,165,250,0.3)' : 'rgba(74,222,128,0.3)' }}>
+        <Card style={{ marginBottom: 14, borderColor: editItem ? 'rgba(255,255,255,0.3)' : 'rgba(185,249,79,0.3)' }}>
           <div style={{ fontSize: 13, fontWeight: 700, color: editItem ? 'var(--blue)' : 'var(--green)', marginBottom: 12 }}>
             {editItem ? `✏ Edit: ${editItem.name}` : '➕ New Exercise'}
           </div>
@@ -310,7 +311,7 @@ function LibraryPanel({ exercises, saving, onAdd, onUpdate, onRemove }: {
 // ─── Day workout card ─────────────────────────────────────────────────────────
 
 const smallBtn = (color: string, bg: string, border: string): React.CSSProperties => ({
-  padding: '4px 10px', borderRadius: 7, fontSize: 11, fontWeight: 700,
+  padding: '7px 14px', borderRadius: 999, fontSize: 11, fontWeight: 700,
   cursor: 'pointer', fontFamily: 'inherit', color, background: bg, border: `1px solid ${border}`,
 })
 
@@ -382,8 +383,6 @@ function DayWorkout({
     catch (e) { setNotice({ text: e instanceof Error ? e.message : 'Delete failed', error: true }) }
   }
 
-  const accent = dayDone ? 'var(--green)' : isToday ? 'var(--blue)' : 'var(--text-secondary)'
-
   return (
     <div style={{ marginBottom: expanded ? 20 : 8 }}>
       {/* Day header — tap anywhere to collapse / expand */}
@@ -392,40 +391,48 @@ function DayWorkout({
         role="button"
         aria-expanded={expanded}
         style={{
-          display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: 8, marginBottom: expanded ? 8 : 0,
-          cursor: 'pointer', padding: '8px 10px', borderRadius: 10,
-          background: 'var(--surface)',
-          border: `1px solid ${dayDone ? 'rgba(74,222,128,0.35)' : isToday ? 'rgba(96,165,250,0.45)' : 'var(--border)'}`,
+          display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: 10, marginBottom: expanded ? 10 : 0,
+          cursor: 'pointer', padding: '14px 18px', borderRadius: 24,
+          background: isToday && !dayDone ? 'var(--text-primary)' : 'var(--surface)',
+          color: isToday && !dayDone ? 'var(--on-accent)' : 'var(--text-primary)',
+          boxShadow: dayDone ? 'inset 0 0 0 1.5px var(--green)' : 'none',
+          transition: 'background 0.2s',
         }}
       >
-        <span style={{ fontSize: 10, color: 'var(--text-muted)', width: 10, flexShrink: 0 }}>{expanded ? '▼' : '▶'}</span>
-        <div style={{ fontSize: 13, fontWeight: 700, color: accent }}>{day}</div>
-        <div style={{ fontSize: 11, color: 'var(--text-muted)', fontFamily: 'var(--font-mono)' }}>{dayDate(weekStart, day)}</div>
+        <svg width="12" height="12" viewBox="0 0 12 12" style={{ flexShrink: 0, transform: expanded ? 'rotate(90deg)' : 'none', transition: 'transform 0.2s', opacity: 0.6 }}>
+          <path d="M4 2l4 4-4 4" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+        </svg>
+        <div className="display" style={{ fontSize: 22, lineHeight: 1, color: dayDone ? 'var(--green)' : 'inherit' }}>{day}</div>
+        <div style={{ fontSize: 11, opacity: 0.55, fontFamily: 'var(--font-mono)' }}>{dayDate(weekStart, day)}</div>
         {isToday && (
-          <span style={{ fontSize: 9, fontWeight: 800, color: 'var(--blue)', background: 'rgba(96,165,250,0.12)', border: '1px solid rgba(96,165,250,0.35)', borderRadius: 5, padding: '1px 6px', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Today</span>
+          <span style={{ fontSize: 9, fontWeight: 800, color: 'var(--on-accent)', background: dayDone ? 'var(--green)' : 'var(--green)', borderRadius: 999, padding: '3px 9px', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Today</span>
         )}
+        <div style={{ flex: 1 }} />
         {slots.length > 0 && (
           <button
             onClick={e => { e.stopPropagation(); void onDayToggle(!dayDone) }}
             disabled={saving}
             style={{
               display: 'flex', alignItems: 'center', gap: 4,
-              padding: '2px 8px', borderRadius: 20, border: 'none', cursor: 'pointer',
-              fontSize: 10, fontWeight: 700, transition: 'all 0.2s',
-              background: dayDone ? 'rgba(74,222,128,0.15)' : 'var(--bg-input)',
-              color: dayDone ? 'var(--green)' : 'var(--text-muted)',
-              outline: dayDone ? '1px solid rgba(74,222,128,0.4)' : '1px solid var(--border)',
+              padding: '5px 12px', borderRadius: 999, border: 'none', cursor: 'pointer',
+              fontSize: 11, fontWeight: 800, transition: 'all 0.2s',
+              background: dayDone ? 'var(--green)' : isToday ? 'rgba(0,0,0,0.12)' : 'var(--bg-input)',
+              color: dayDone ? 'var(--on-accent)' : 'inherit',
             }}
           >
             {dayDone ? '✓ Done' : `${completedCount}/${slots.length}`}
           </button>
         )}
-        <div style={{ flex: 1 }} />
-        {/* When collapsed, show which areas the day hits */}
-        <span style={{ fontSize: 11, color: 'var(--text-muted)' }}>{slots.length} exercise{slots.length !== 1 ? 's' : ''}</span>
+        {slots.length === 0 && <span style={{ fontSize: 11, opacity: 0.5 }}>Rest</span>}
+        {/* Capsule progress */}
+        {slots.length > 0 && (
+          <div style={{ flexBasis: '100%', height: 8, borderRadius: 999, background: isToday && !dayDone ? 'rgba(0,0,0,0.12)' : 'var(--bg-track)', overflow: 'hidden' }}>
+            <div style={{ height: '100%', width: `${(completedCount / slots.length) * 100}%`, borderRadius: 999, background: dayDone ? 'var(--green)' : 'var(--amber)', transition: 'width 0.3s' }} />
+          </div>
+        )}
         {/* Collapsed: show the muscle areas the day works */}
         {!expanded && slotGroups.length > 0 && (
-          <div style={{ flexBasis: '100%', fontSize: 11, color: 'var(--text-muted)', paddingLeft: 18, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+          <div style={{ flexBasis: '100%', fontSize: 11, opacity: 0.6, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
             {slotGroups.map(g => g.label).join(' · ')}
           </div>
         )}
@@ -456,15 +463,15 @@ function DayWorkout({
 
           {/* Selection action bar */}
           {selCount > 0 && (
-            <div style={{ background: 'rgba(96,165,250,0.07)', border: '1px solid rgba(96,165,250,0.35)', borderRadius: 10, padding: 10, marginBottom: 10 }}>
+            <div style={{ background: 'var(--surface)', boxShadow: 'inset 0 0 0 1.5px var(--text-primary)', borderRadius: 24, padding: 14, marginBottom: 12 }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8, flexWrap: 'wrap' }}>
-                <span style={{ fontSize: 12, fontWeight: 700, color: 'var(--blue)' }}>{selCount} selected</span>
+                <span className="display" style={{ fontSize: 16, color: 'var(--text-primary)' }}>{selCount} selected</span>
                 <div style={{ flex: 1 }} />
                 {!isTodayTarget && (
                   <button
                     onClick={() => void doCopy(today.weekStart, today.weekday, 'today')}
                     disabled={saving}
-                    style={{ ...smallBtn('var(--bg)', 'var(--blue)', 'var(--blue)'), padding: '5px 12px' }}
+                    style={{ ...smallBtn('var(--on-accent)', 'var(--green)', 'var(--green)'), padding: '8px 16px' }}
                   >
                     📋 Copy to today
                   </button>
@@ -507,10 +514,9 @@ function DayWorkout({
                       key={slot.id}
                       onClick={() => toggleSelect(slot.id)}
                       style={{
-                        background: done ? 'rgba(74,222,128,0.06)' : info.bg,
-                        border: `1px solid ${done ? 'rgba(74,222,128,0.35)' : info.border}`,
-                        boxShadow: sel ? '0 0 0 2px var(--blue)' : 'none',
-                        borderRadius: 9, padding: '10px 12px', marginBottom: 6,
+                        background: 'var(--surface)',
+                        boxShadow: sel ? 'inset 0 0 0 2px var(--text-primary)' : done ? 'inset 0 0 0 1px rgba(185,249,79,0.35)' : 'none',
+                        borderRadius: 22, padding: '14px 14px', marginBottom: 8,
                         display: 'flex', alignItems: 'flex-start', gap: 8,
                         opacity: done ? 0.85 : 1, transition: 'all 0.2s', cursor: 'pointer',
                       }}
@@ -522,27 +528,32 @@ function DayWorkout({
                         aria-label={done ? 'Mark incomplete' : 'Mark complete'}
                         style={{
                           flexShrink: 0, marginTop: 1,
-                          width: 22, height: 22, borderRadius: 6,
-                          border: `2px solid ${done ? 'var(--green)' : info.border}`,
-                          background: done ? 'rgba(74,222,128,0.2)' : 'transparent',
+                          width: 30, height: 30, borderRadius: '50%',
+                          border: `2px solid ${done ? 'var(--green)' : 'var(--checkbox-off)'}`,
+                          background: done ? 'var(--green)' : 'transparent',
                           cursor: 'pointer', display: 'flex', alignItems: 'center',
                           justifyContent: 'center', transition: 'all 0.18s',
                         }}
                       >
-                        {done && <span style={{ color: 'var(--green)', fontSize: 12, fontWeight: 700, lineHeight: 1 }}>✓</span>}
+                        {done && <span style={{ color: 'var(--on-accent)', fontSize: 14, fontWeight: 800, lineHeight: 1 }}>✓</span>}
                       </button>
 
                       <div style={{ flex: 1, minWidth: 0 }}>
                         <div style={{
-                          fontSize: 13, fontWeight: 700,
+                          fontSize: 15, fontWeight: 700,
                           color: done ? 'var(--text-muted)' : 'var(--text-primary)',
                           textDecoration: done ? 'line-through' : 'none',
                           transition: 'all 0.2s',
                         }}>
                           {slot.exercise.name}
                         </div>
-                        <div style={{ fontSize: 11, color: done ? 'var(--text-muted)' : info.color, fontWeight: 600, marginTop: 2 }}>
-                          {slot.custom_sets ?? slot.exercise.default_sets} sets · {slot.custom_reps ?? slot.exercise.default_reps}
+                        <div style={{ display: 'flex', gap: 6, marginTop: 8, flexWrap: 'wrap' }}>
+                          <span style={{ fontSize: 11, fontWeight: 800, padding: '3px 11px', borderRadius: 999, background: done ? 'var(--bg-input)' : 'var(--green)', color: done ? 'var(--text-muted)' : 'var(--on-accent)' }}>
+                            {slot.custom_sets ?? slot.exercise.default_sets} sets
+                          </span>
+                          <span style={{ fontSize: 11, fontWeight: 700, padding: '3px 11px', borderRadius: 999, background: 'var(--bg-input)', color: done ? 'var(--text-muted)' : 'var(--text-primary)' }}>
+                            {slot.custom_reps ?? slot.exercise.default_reps} reps
+                          </span>
                         </div>
                         {slot.exercise.impact_areas.length > 1 && (
                           <div style={{ fontSize: 10, color: 'var(--text-muted)', marginTop: 3 }}>
@@ -561,13 +572,11 @@ function DayWorkout({
                           onClick={e => { e.stopPropagation(); setInfoOpen(prev => { const n = new Set(prev); if (n.has(slot.id)) n.delete(slot.id); else n.add(slot.id); return n }) }}
                           aria-label={infoOpen.has(slot.id) ? 'Hide description' : 'Show description'}
                           aria-expanded={infoOpen.has(slot.id)}
-                          style={{ background: infoOpen.has(slot.id) ? 'rgba(96,165,250,0.15)' : 'transparent', border: '1px solid var(--border)', borderRadius: 6, color: 'var(--blue)', fontSize: 13, fontWeight: 700, fontStyle: 'italic', width: 26, height: 26, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, fontFamily: 'serif' }}
+                          style={{ background: infoOpen.has(slot.id) ? 'var(--text-primary)' : 'var(--bg-input)', border: 'none', borderRadius: '50%', color: infoOpen.has(slot.id) ? 'var(--on-accent)' : 'var(--text-primary)', fontSize: 14, fontWeight: 700, fontStyle: 'italic', width: 32, height: 32, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, fontFamily: 'serif' }}
                         >i</button>
                       )}
 
-                      {sel && <span style={{ color: 'var(--blue)', fontSize: 13, fontWeight: 800, flexShrink: 0, lineHeight: '26px' }}>●</span>}
-
-                      <button onClick={e => { e.stopPropagation(); void onRemove(slot.id) }} disabled={saving} style={{ background: 'rgba(248,113,113,0.1)', border: '1px solid rgba(248,113,113,0.25)', borderRadius: 6, color: 'var(--red)', fontSize: 12, width: 26, height: 26, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>×</button>
+                                            <button onClick={e => { e.stopPropagation(); void onRemove(slot.id) }} disabled={saving} style={{ background: 'var(--bg-input)', border: 'none', borderRadius: '50%', color: 'var(--red)', fontSize: 15, width: 32, height: 32, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>×</button>
                     </div>
                   )
                 })}
@@ -577,18 +586,18 @@ function DayWorkout({
 
           {/* Add exercise picker */}
           {!showPicker ? (
-            <button onClick={() => setShowPicker(true)} style={{ width: '100%', padding: '7px 12px', borderRadius: 9, fontSize: 12, fontWeight: 600, cursor: 'pointer', textAlign: 'left', border: '1.5px dashed rgba(74,222,128,0.4)', background: 'rgba(74,222,128,0.05)', color: 'var(--green)', fontFamily: 'inherit', display: 'flex', alignItems: 'center', gap: 6 }}>
+            <button onClick={() => setShowPicker(true)} style={{ width: '100%', padding: '13px 16px', borderRadius: 999, fontSize: 13, fontWeight: 700, cursor: 'pointer', textAlign: 'center', justifyContent: 'center', border: '1.5px dashed var(--green)', background: 'transparent', color: 'var(--green)', fontFamily: 'inherit', display: 'flex', alignItems: 'center', gap: 6 }}>
               💪 Add exercise
             </button>
           ) : (
-            <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 10, padding: 12 }}>
+            <div style={{ background: 'var(--surface)', borderRadius: 24, padding: 14 }}>
               <input type="text" value={searchQ} onChange={e => setSearchQ(e.target.value)} placeholder="Search exercises…" style={{ ...fs(), marginBottom: 10 }} autoFocus />
               <div style={{ maxHeight: 280, overflowY: 'auto' }}>
                 {pickerGroups.map(g => (
                   <div key={g.key || 'untagged'} style={{ marginBottom: 10 }}>
                     <AreaHeader label={g.label} count={g.items.length} />
                     {g.items.map(ex => (
-                      <button key={ex.id} onClick={async () => { await onAdd(ex.id); setShowPicker(false); setSearchQ('') }} disabled={saving} style={{ width: '100%', padding: '8px 10px', borderRadius: 7, marginBottom: 4, fontSize: 12, fontWeight: 600, cursor: 'pointer', textAlign: 'left', background: 'var(--bg-input)', border: '1px solid var(--border)', color: 'var(--text-primary)', fontFamily: 'inherit' }}>
+                      <button key={ex.id} onClick={async () => { await onAdd(ex.id); setShowPicker(false); setSearchQ('') }} disabled={saving} style={{ width: '100%', padding: '11px 14px', borderRadius: 18, marginBottom: 5, fontSize: 13, fontWeight: 600, cursor: 'pointer', textAlign: 'left', background: 'var(--bg-input)', border: 'none', color: 'var(--text-primary)', fontFamily: 'inherit' }}>
                         <div>{ex.name}</div>
                         <div style={{ fontSize: 10, color: 'var(--text-muted)', marginTop: 1 }}>{ex.default_sets} sets · {ex.default_reps}{ex.impact_areas.length > 1 ? ` · also ${ex.impact_areas.slice(1, 3).join(', ')}` : ''}</div>
                       </button>
@@ -656,13 +665,13 @@ export default function WorkoutPlanner() {
   return (
     <div className="fade-in">
       {/* ── Tabs ── */}
-      <div style={{ display: 'flex', background: 'var(--surface)', borderRadius: 10, padding: 3, marginBottom: 18 }}>
+      <div style={{ display: 'flex', gap: 6, marginBottom: 18, overflowX: 'auto' }}>
         {([
-          ['overview', '📊 Overview'],
-          ['plan',     '💪 Week Plan'],
-          ['library',  '📋 Library'],
+          ['overview', 'Overview'],
+          ['plan',     'Week Plan'],
+          ['library',  'Library'],
         ] as const).map(([t, label]) => (
-          <button key={t} onClick={() => setTab(t)} style={{ flex: 1, padding: '8px 4px', borderRadius: 8, fontSize: 12, fontWeight: 700, cursor: 'pointer', border: 'none', fontFamily: 'inherit', transition: 'all 0.2s', background: tab === t ? 'var(--bg-header)' : 'transparent', color: tab === t ? 'var(--text-primary)' : 'var(--text-muted)', boxShadow: tab === t ? '0 1px 4px rgba(0,0,0,0.12)' : 'none' }}>
+          <button key={t} onClick={() => setTab(t)} style={{ flex: 1, padding: '12px 8px', borderRadius: 999, fontSize: 13, fontWeight: 700, cursor: 'pointer', border: 'none', fontFamily: 'inherit', transition: 'all 0.2s', whiteSpace: 'nowrap', background: tab === t ? 'var(--green)' : 'var(--surface)', color: tab === t ? 'var(--on-accent)' : 'var(--text-secondary)' }}>
             {label}
           </button>
         ))}
@@ -675,24 +684,68 @@ export default function WorkoutPlanner() {
       {tab === 'plan' && (
         <>
           {/* Week navigation */}
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 18 }}>
-            <button onClick={() => setWeekStart(w => addWeeks(w, -1))} style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 8, color: 'var(--text-secondary)', padding: '6px 14px', cursor: 'pointer', fontSize: 13 }}>←</button>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 10, marginBottom: 14 }}>
+            <button onClick={() => setWeekStart(w => addWeeks(w, -1))} aria-label="Previous week" style={{ background: 'var(--surface)', border: 'none', borderRadius: '50%', width: 44, height: 44, color: 'var(--text-primary)', cursor: 'pointer', fontSize: 18, flexShrink: 0 }}>←</button>
 
-            <div ref={pickerRef} style={{ position: 'relative', textAlign: 'center' }}>
-              <button onClick={() => setShowPicker(v => !v)} style={{ background: 'transparent', border: 'none', cursor: 'pointer', padding: '4px 8px', borderRadius: 8 }}>
-                <div style={{ fontSize: 13, fontWeight: 700, color: 'var(--text-primary)', display: 'flex', alignItems: 'center', gap: 5, borderBottom: showPicker ? '1.5px solid var(--blue)' : '1.5px solid transparent', paddingBottom: 2 }}>
-                  📅 {formatWeekRange(weekStart)}
-                  <span style={{ fontSize: 10, color: 'var(--text-muted)' }}>{showPicker ? '▲' : '▼'}</span>
+            <div ref={pickerRef} style={{ position: 'relative', textAlign: 'center', flex: 1 }}>
+              <button onClick={() => setShowPicker(v => !v)} style={{ background: 'var(--surface)', border: 'none', cursor: 'pointer', padding: '8px 18px', borderRadius: 999, color: 'var(--text-primary)', width: '100%' }}>
+                <div className="display" style={{ fontSize: 17, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6 }}>
+                  {formatWeekRange(weekStart)}
+                  <span style={{ fontSize: 9, color: 'var(--text-muted)' }}>{showPicker ? '▲' : '▼'}</span>
                 </div>
-                <div style={{ fontSize: 10, color: 'var(--text-muted)', marginTop: 2 }}>{slots.filter(s => s.completed).length}/{slots.length} completed</div>
               </button>
               {showPicker && (
                 <WeekPicker value={weekStart} onChange={iso => { setWeekStart(iso); setShowPicker(false) }} onClose={() => setShowPicker(false)} />
               )}
             </div>
 
-            <button onClick={() => setWeekStart(w => addWeeks(w, 1))} style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 8, color: 'var(--text-secondary)', padding: '6px 14px', cursor: 'pointer', fontSize: 13 }}>→</button>
+            <button onClick={() => setWeekStart(w => addWeeks(w, 1))} aria-label="Next week" style={{ background: 'var(--surface)', border: 'none', borderRadius: '50%', width: 44, height: 44, color: 'var(--text-primary)', cursor: 'pointer', fontSize: 18, flexShrink: 0 }}>→</button>
           </div>
+
+          {/* Week progress — dashboard card with capsule bars */}
+          {!planLoading && !libLoading && !planError && !libError && (() => {
+            const doneN  = slots.filter(x => x.completed).length
+            const maxN   = Math.max(1, ...WEEKDAYS.map(d => slotsFor(d).length))
+            return (
+              <div style={{ background: 'var(--surface)', borderRadius: 24, padding: '18px 18px 14px', marginBottom: 16 }}>
+                <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', marginBottom: 14 }}>
+                  <div>
+                    <div className="display" style={{ fontSize: 13, color: 'var(--text-secondary)' }}>Week progress</div>
+                    <div className="display" style={{ fontSize: 44, lineHeight: 1.05, color: 'var(--text-primary)' }}>
+                      <span style={{ color: 'var(--green)' }}>{doneN}</span><span style={{ color: 'var(--text-muted)', fontSize: 28 }}>/{slots.length}</span>
+                    </div>
+                  </div>
+                  <div style={{ textAlign: 'right', fontSize: 11, color: 'var(--text-muted)', display: 'flex', flexDirection: 'column', gap: 5 }}>
+                    <span><span style={{ display: 'inline-block', width: 8, height: 8, borderRadius: '50%', background: 'var(--green)', marginRight: 6 }} />Done</span>
+                    <span><span style={{ display: 'inline-block', width: 8, height: 8, borderRadius: '50%', background: 'var(--amber)', marginRight: 6 }} />To do</span>
+                  </div>
+                </div>
+                <div style={{ display: 'flex', gap: 8, alignItems: 'flex-end', height: 84 }}>
+                  {WEEKDAYS.map(d => {
+                    const total = slotsFor(d).length
+                    const dn    = slotsFor(d).filter(x => x.completed).length
+                    const h     = total === 0 ? 14 : 28 + (total / maxN) * 56
+                    return (
+                      <button key={d} onClick={() => setExpandedDays(new Set<Weekday>([d]))} aria-label={`${d}: ${dn} of ${total} done`}
+                        style={{ flex: 1, height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'flex-end', alignItems: 'center', gap: 6, background: 'transparent', border: 'none', cursor: 'pointer', padding: 0 }}>
+                        <div style={{ width: '100%', height: h, borderRadius: 999, background: total === 0 ? 'var(--bg-track)' : 'var(--amber)', display: 'flex', alignItems: 'flex-end', overflow: 'hidden' }}>
+                          {total > 0 && <div style={{ width: '100%', height: `${(dn / total) * 100}%`, background: 'var(--green)', borderRadius: 999, transition: 'height 0.3s' }} />}
+                        </div>
+                      </button>
+                    )
+                  })}
+                </div>
+                <div style={{ display: 'flex', gap: 8, marginTop: 8 }}>
+                  {WEEKDAYS.map(d => {
+                    const isT = today.weekStart === weekStart && today.weekday === d
+                    return (
+                      <div key={d} style={{ flex: 1, textAlign: 'center', fontSize: 10, fontWeight: 800, color: isT ? 'var(--on-accent)' : 'var(--text-muted)', background: isT ? 'var(--text-primary)' : 'transparent', borderRadius: 999, padding: '2px 0' }}>{d.slice(0, 1)}</div>
+                    )
+                  })}
+                </div>
+              </div>
+            )
+          })()}
 
           {(planLoading || libLoading) && (
             <div style={{ textAlign: 'center', padding: '32px 0', color: 'var(--text-muted)', fontSize: 13 }}>Loading…</div>
@@ -705,9 +758,9 @@ export default function WorkoutPlanner() {
             <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 8 }}>
               <button
                 onClick={() => setExpandedDays(allExpanded ? new Set() : new Set<Weekday>(WEEKDAYS))}
-                style={{ background: 'transparent', border: 'none', color: 'var(--text-muted)', fontSize: 11, fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit' }}
+                style={{ background: 'var(--surface)', border: 'none', color: 'var(--text-secondary)', fontSize: 11, fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit', padding: '7px 14px', borderRadius: 999 }}
               >
-                {allExpanded ? 'Collapse all ▲' : 'Expand all ▼'}
+                {allExpanded ? 'Collapse all' : 'Expand all'}
               </button>
             </div>
           )}

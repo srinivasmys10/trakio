@@ -14,8 +14,8 @@ import {
 
 const fieldSt = (): React.CSSProperties => ({
   background: 'var(--bg-input)', border: '1px solid var(--border-input)',
-  borderRadius: 8, color: 'var(--text-primary)', fontSize: 13,
-  padding: '9px 12px', outline: 'none', fontFamily: 'inherit',
+  borderRadius: 16, color: 'var(--text-primary)', fontSize: 13,
+  padding: '11px 14px', outline: 'none', fontFamily: 'inherit',
   width: '100%', boxSizing: 'border-box',
 })
 
@@ -64,10 +64,10 @@ function IngEditor({ rows, onChange, onAdd, onRemove }: { rows: IngRow[]; onChan
         <div key={i} style={{ display: 'flex', gap: 6, marginBottom: 6, alignItems: 'center' }}>
           <input type="text" value={r.name} placeholder="Ingredient" onChange={e => onChange(i, 'name', e.target.value)} style={{ ...fieldSt(), flex: 2 }} />
           <input type="text" value={r.quantity} placeholder="Qty" onChange={e => onChange(i, 'quantity', e.target.value)} style={{ ...fieldSt(), flex: 1 }} />
-          <button type="button" onClick={() => onRemove(i)} style={{ background: 'rgba(248,113,113,0.1)', border: '1px solid rgba(248,113,113,0.25)', borderRadius: 6, color: 'var(--red)', width: 30, height: 30, flexShrink: 0, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>x</button>
+          <button type="button" onClick={() => onRemove(i)} style={{ background: 'var(--bg-input)', border: 'none', borderRadius: '50%', color: 'var(--red)', width: 34, height: 34, flexShrink: 0, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>×</button>
         </div>
       ))}
-      <button type="button" onClick={onAdd} style={{ background: 'transparent', border: '1px dashed rgba(96,165,250,0.4)', borderRadius: 7, color: 'var(--blue)', fontSize: 12, fontWeight: 600, padding: '5px 12px', cursor: 'pointer', marginTop: 2 }}>+ Add ingredient</button>
+      <button type="button" onClick={onAdd} style={{ background: 'transparent', border: '1.5px dashed var(--green)', borderRadius: 999, color: 'var(--green)', fontSize: 12, fontWeight: 700, padding: '8px 16px', cursor: 'pointer', marginTop: 2 }}>+ Add ingredient</button>
     </div>
   )
 }
@@ -95,7 +95,7 @@ function LibraryMealForm({ initial, saving, onSave, onCancel }: { initial?: Meal
   }
 
   const selBtn = (active: boolean, color: string): React.CSSProperties => ({
-    padding: '5px 12px', borderRadius: 7, fontSize: 12, fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit',
+    padding: '7px 14px', borderRadius: 999, fontSize: 12, fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit',
     border: `1.5px solid ${active ? color : 'var(--border)'}`,
     background: active ? `${color}22` : 'var(--bg-input)',
     color: active ? color : 'var(--text-muted)',
@@ -118,10 +118,10 @@ function LibraryMealForm({ initial, saving, onSave, onCancel }: { initial?: Meal
       <div><Lbl>Notes / Tips</Lbl><textarea value={notes} onChange={e => setNotes(e.target.value)} placeholder="Prep tips, substitutions, macros..." style={{ ...fieldSt(), minHeight: 50, resize: 'vertical' }} /></div>
       {err && <div style={{ fontSize: 12, color: 'var(--red)' }}>Warning: {err}</div>}
       <div style={{ display: 'flex', gap: 8 }}>
-        <button type="submit" disabled={saving} style={{ flex: 1, padding: '10px 0', borderRadius: 9, fontSize: 13, fontWeight: 700, border: 'none', cursor: saving ? 'not-allowed' : 'pointer', background: saving ? 'rgba(74,222,128,0.15)' : 'var(--green)', color: 'var(--bg)' }}>
+        <button type="submit" disabled={saving} style={{ flex: 1, padding: '13px 0', borderRadius: 999, fontSize: 13, fontWeight: 700, border: 'none', cursor: saving ? 'not-allowed' : 'pointer', background: saving ? 'rgba(185,249,79,0.15)' : 'var(--green)', color: 'var(--on-accent)' }}>
           {saving ? 'Saving...' : initial ? 'Update Meal' : 'Add to Library'}
         </button>
-        <button type="button" onClick={onCancel} style={{ padding: '10px 14px', borderRadius: 9, fontSize: 13, fontWeight: 600, border: '1px solid var(--border)', background: 'transparent', color: 'var(--text-muted)', cursor: 'pointer' }}>Cancel</button>
+        <button type="button" onClick={onCancel} style={{ padding: '13px 20px', borderRadius: 999, fontSize: 13, fontWeight: 600, border: '1px solid var(--border-input)', background: 'transparent', color: 'var(--text-muted)', cursor: 'pointer' }}>Cancel</button>
       </div>
     </form>
   )
@@ -144,17 +144,17 @@ function LibraryPanel({ library, saving, onAdd, onUpdate, onDelete }: { library:
           const active = filterMt === mt
           const color  = mt === 'all' ? 'var(--text-secondary)' : MEAL_LABELS[mt].color
           return (
-            <button key={mt} onClick={() => setFilterMt(mt)} style={{ padding: '4px 10px', borderRadius: 7, fontSize: 11, fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit', border: `1.5px solid ${active ? color : 'var(--border)'}`, background: active ? `${color}18` : 'var(--surface)', color: active ? color : 'var(--text-muted)' }}>
+            <button key={mt} onClick={() => setFilterMt(mt)} style={{ padding: '7px 14px', borderRadius: 999, fontSize: 11, fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit', border: `1.5px solid ${active ? color : 'var(--border)'}`, background: active ? `${color}18` : 'var(--surface)', color: active ? color : 'var(--text-muted)' }}>
               {mt === 'all' ? 'All' : `${MEAL_LABELS[mt].icon} ${MEAL_LABELS[mt].label}`}
             </button>
           )
         })}
-        <button onClick={() => { setShowForm(true); setEditItem(null) }} style={{ marginLeft: 'auto', padding: '5px 12px', borderRadius: 7, fontSize: 12, fontWeight: 700, border: '1px solid rgba(74,222,128,0.4)', background: 'rgba(74,222,128,0.08)', color: 'var(--green)', cursor: 'pointer', fontFamily: 'inherit' }}>+ New Meal</button>
+        <button onClick={() => { setShowForm(true); setEditItem(null) }} style={{ marginLeft: 'auto', padding: '8px 16px', borderRadius: 999, fontSize: 12, fontWeight: 700, border: 'none', background: 'var(--green)', color: 'var(--on-accent)', cursor: 'pointer', fontFamily: 'inherit' }}>+ New Meal</button>
       </div>
 
       {(showForm || editItem) && (
-        <Card style={{ marginBottom: 14, borderColor: editItem ? 'rgba(96,165,250,0.3)' : 'rgba(74,222,128,0.3)' }}>
-          <div style={{ fontSize: 13, fontWeight: 700, color: editItem ? 'var(--blue)' : 'var(--green)', marginBottom: 12 }}>
+        <Card style={{ marginBottom: 14, borderColor: editItem ? 'rgba(255,255,255,0.3)' : 'rgba(185,249,79,0.3)' }}>
+          <div className="display" style={{ fontSize: 18, color: editItem ? 'var(--text-primary)' : 'var(--green)', marginBottom: 12 }}>
             {editItem ? `Edit: ${editItem.name}` : 'New Meal'}
           </div>
           <LibraryMealForm
@@ -177,21 +177,21 @@ function LibraryPanel({ library, saving, onAdd, onUpdate, onDelete }: { library:
         const m    = MEAL_LABELS[meal.meal_type]
         const open = expanded === meal.id
         return (
-          <div key={meal.id} style={{ background: m.bg, border: `1px solid ${m.border}`, borderRadius: 10, marginBottom: 8, overflow: 'hidden' }}>
-            <div onClick={() => setExpanded(open ? null : meal.id)} style={{ padding: '10px 12px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 10 }}>
-              <span style={{ fontSize: 16 }}>{m.icon}</span>
+          <div key={meal.id} style={{ background: 'var(--surface)', borderRadius: 22, marginBottom: 8, overflow: 'hidden' }}>
+            <div onClick={() => setExpanded(open ? null : meal.id)} style={{ padding: '14px 16px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 12 }}>
+              <span style={{ fontSize: 18, width: 38, height: 38, borderRadius: '50%', background: 'var(--bg-input)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>{m.icon}</span>
               <div style={{ flex: 1, minWidth: 0 }}>
-                <div style={{ fontSize: 13, fontWeight: 700, color: 'var(--text-primary)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{meal.name}</div>
+                <div style={{ fontSize: 15, fontWeight: 700, color: 'var(--text-primary)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{meal.name}</div>
                 <div style={{ fontSize: 10, color: 'var(--text-muted)', marginTop: 2 }}>{meal.ingredients.length} ingredients</div>
               </div>
               <div style={{ display: 'flex', gap: 5, flexShrink: 0 }}>
-                <button onClick={e => { e.stopPropagation(); setEditItem(meal); setShowForm(false) }} style={{ background: 'rgba(96,165,250,0.1)', border: '1px solid rgba(96,165,250,0.3)', borderRadius: 6, color: 'var(--blue)', fontSize: 11, padding: '3px 8px', cursor: 'pointer' }}>Edit</button>
-                <button onClick={async e => { e.stopPropagation(); if (window.confirm(`Remove "${meal.name}"? This clears it from the week plan too.`)) await onDelete(meal.id) }} style={{ background: 'rgba(248,113,113,0.1)', border: '1px solid rgba(248,113,113,0.25)', borderRadius: 6, color: 'var(--red)', fontSize: 11, padding: '3px 8px', cursor: 'pointer' }}>Del</button>
+                <button onClick={e => { e.stopPropagation(); setEditItem(meal); setShowForm(false) }} style={{ background: 'var(--bg-input)', border: 'none', borderRadius: 999, color: 'var(--text-primary)', fontSize: 11, fontWeight: 700, padding: '6px 12px', cursor: 'pointer' }}>Edit</button>
+                <button onClick={async e => { e.stopPropagation(); if (window.confirm(`Remove "${meal.name}"? This clears it from the week plan too.`)) await onDelete(meal.id) }} style={{ background: 'var(--bg-input)', border: 'none', borderRadius: 999, color: 'var(--red)', fontSize: 11, fontWeight: 700, padding: '6px 12px', cursor: 'pointer' }}>Del</button>
                 <span style={{ color: 'var(--text-muted)', fontSize: 14, lineHeight: '24px' }}>{open ? 'v' : '>'}</span>
               </div>
             </div>
             {open && (
-              <div style={{ borderTop: `1px solid ${m.border}`, padding: '12px 14px', display: 'flex', flexDirection: 'column', gap: 8 }}>
+              <div style={{ borderTop: '1px solid var(--border)', padding: '12px 16px 16px', display: 'flex', flexDirection: 'column', gap: 8 }}>
                 {meal.description && <p style={{ fontSize: 13, color: 'var(--text-secondary)', lineHeight: 1.55 }}>{meal.description}</p>}
                 {meal.ingredients.length > 0 && (
                   <div>
@@ -223,19 +223,22 @@ function SlotCard({ slot, weekday: _weekday, mealType, library, saving, onAssign
 
   if (slot) {
     return (
-      <div style={{ background: m.bg, border: `1px solid ${m.border}`, borderRadius: 9, padding: '10px 12px', marginBottom: 6 }}>
-        <div style={{ display: 'flex', alignItems: 'flex-start', gap: 8 }}>
-          <span style={{ fontSize: 15, flexShrink: 0, marginTop: 1 }}>{m.icon}</span>
+      <div style={{ background: 'var(--surface)', borderRadius: 22, padding: '14px 16px', marginBottom: 8 }}>
+        <div style={{ display: 'flex', alignItems: 'flex-start', gap: 12 }}>
+          <span style={{ fontSize: 18, width: 38, height: 38, borderRadius: '50%', background: 'var(--bg-input)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>{m.icon}</span>
           <div style={{ flex: 1, minWidth: 0 }}>
-            <div style={{ fontSize: 13, fontWeight: 700, color: 'var(--text-primary)', lineHeight: 1.3 }}>{slot.meal.name}</div>
+            <div style={{ fontSize: 15, fontWeight: 700, color: 'var(--text-primary)', lineHeight: 1.3 }}>{slot.meal.name}</div>
             {slot.meal.description && <div style={{ fontSize: 11, color: 'var(--text-muted)', marginTop: 2, lineHeight: 1.4 }}>{slot.meal.description.slice(0, 80)}{slot.meal.description.length > 80 ? '...' : ''}</div>}
             {slot.meal.ingredients.length > 0 && (
-              <div style={{ fontSize: 10, color: m.color, marginTop: 4, fontWeight: 600 }}>
-                {slot.meal.ingredients.slice(0, 3).map(i => i.name).join(' · ')}{slot.meal.ingredients.length > 3 ? ` +${slot.meal.ingredients.length - 3} more` : ''}
+              <div style={{ display: 'flex', gap: 5, flexWrap: 'wrap', marginTop: 8 }}>
+                {slot.meal.ingredients.slice(0, 3).map(i => (
+                  <span key={i.id} style={{ fontSize: 10, fontWeight: 700, color: 'var(--text-primary)', background: 'var(--bg-input)', borderRadius: 999, padding: '3px 10px' }}>{i.name}</span>
+                ))}
+                {slot.meal.ingredients.length > 3 && <span style={{ fontSize: 10, fontWeight: 700, color: 'var(--on-accent)', background: 'var(--green)', borderRadius: 999, padding: '3px 10px' }}>+{slot.meal.ingredients.length - 3}</span>}
               </div>
             )}
           </div>
-          <button onClick={() => onRemove()} disabled={saving} style={{ background: 'rgba(248,113,113,0.1)', border: '1px solid rgba(248,113,113,0.25)', borderRadius: 6, color: 'var(--red)', fontSize: 13, width: 26, height: 26, flexShrink: 0, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>x</button>
+          <button onClick={() => onRemove()} disabled={saving} style={{ background: 'var(--bg-input)', border: 'none', borderRadius: '50%', color: 'var(--red)', fontSize: 15, width: 32, height: 32, flexShrink: 0, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>×</button>
         </div>
       </div>
     )
@@ -244,16 +247,16 @@ function SlotCard({ slot, weekday: _weekday, mealType, library, saving, onAssign
   return (
     <div style={{ marginBottom: 6 }}>
       {!open ? (
-        <button onClick={() => setOpen(true)} disabled={compatible.length === 0} style={{ width: '100%', padding: '8px 12px', borderRadius: 9, fontSize: 12, fontWeight: 600, cursor: compatible.length > 0 ? 'pointer' : 'not-allowed', textAlign: 'left', border: `1.5px dashed ${compatible.length > 0 ? m.border : 'var(--border)'}`, background: compatible.length > 0 ? m.bg : 'transparent', color: compatible.length > 0 ? m.color : 'var(--text-muted)', fontFamily: 'inherit', display: 'flex', alignItems: 'center', gap: 6 }}>
+        <button onClick={() => setOpen(true)} disabled={compatible.length === 0} style={{ width: '100%', padding: '12px 16px', borderRadius: 999, fontSize: 12, fontWeight: 700, cursor: compatible.length > 0 ? 'pointer' : 'not-allowed', textAlign: 'left', border: `1.5px dashed ${compatible.length > 0 ? 'var(--border-input)' : 'var(--border)'}`, background: 'transparent', color: compatible.length > 0 ? 'var(--text-secondary)' : 'var(--text-muted)', fontFamily: 'inherit', display: 'flex', alignItems: 'center', gap: 8 }}>
           <span>{m.icon}</span>
           {compatible.length > 0 ? `+ Add ${m.label}` : `No ${m.label} meals in library yet`}
         </button>
       ) : (
-        <div style={{ background: m.bg, border: `1px solid ${m.border}`, borderRadius: 9, padding: '10px 12px' }}>
-          <div style={{ fontSize: 11, fontWeight: 700, color: m.color, marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.07em' }}>Choose {m.label}</div>
+        <div style={{ background: 'var(--surface)', borderRadius: 24, padding: 14 }}>
+          <div className="display" style={{ fontSize: 15, color: 'var(--text-primary)', marginBottom: 10 }}>Choose {m.label}</div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 5 }}>
             {compatible.map(lib => (
-              <button key={lib.id} onClick={async () => { await onAssign(lib.id); setOpen(false) }} disabled={saving} style={{ padding: '8px 10px', borderRadius: 7, fontSize: 12, fontWeight: 600, cursor: 'pointer', textAlign: 'left', background: 'var(--surface)', border: '1px solid var(--border)', color: 'var(--text-primary)', fontFamily: 'inherit' }}>
+              <button key={lib.id} onClick={async () => { await onAssign(lib.id); setOpen(false) }} disabled={saving} style={{ padding: '11px 14px', borderRadius: 18, fontSize: 12, fontWeight: 600, cursor: 'pointer', textAlign: 'left', background: 'var(--bg-input)', border: 'none', color: 'var(--text-primary)', fontFamily: 'inherit' }}>
                 <div style={{ fontWeight: 700 }}>{lib.name}</div>
                 {lib.ingredients.length > 0 && <div style={{ fontSize: 10, color: 'var(--text-muted)', marginTop: 2 }}>{lib.ingredients.slice(0, 3).map(i => i.name).join(' · ')}</div>}
               </button>
@@ -283,19 +286,19 @@ export default function FoodPlanner() {
   return (
     <div className="fade-in">
       {/* Share banner */}
-      <div style={{ background: 'rgba(96,165,250,0.07)', border: '1px solid rgba(96,165,250,0.2)', borderRadius: 10, padding: '10px 14px', display: 'flex', alignItems: 'center', gap: 10, marginBottom: 18 }}>
-        <span style={{ fontSize: 16 }}>Link</span>
+      <div style={{ background: 'var(--surface)', borderRadius: 24, padding: '12px 14px 12px 16px', display: 'flex', alignItems: 'center', gap: 12, marginBottom: 14 }}>
+        <span style={{ fontSize: 16, width: 38, height: 38, borderRadius: '50%', background: 'var(--bg-input)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>🔗</span>
         <div style={{ flex: 1, minWidth: 0 }}>
-          <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--blue)', marginBottom: 1 }}>Shared meal plan</div>
+          <div className="display" style={{ fontSize: 15, color: 'var(--text-primary)' }}>Shared meal plan</div>
           <div style={{ fontSize: 11, color: 'var(--text-muted)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{shareUrl}</div>
         </div>
-        <button onClick={() => navigator.clipboard?.writeText(shareUrl)} style={{ padding: '4px 10px', borderRadius: 6, fontSize: 11, fontWeight: 700, background: 'rgba(96,165,250,0.12)', border: '1px solid rgba(96,165,250,0.3)', color: 'var(--blue)', cursor: 'pointer' }}>Copy</button>
+        <button onClick={() => navigator.clipboard?.writeText(shareUrl)} style={{ padding: '8px 16px', borderRadius: 999, fontSize: 12, fontWeight: 700, background: 'var(--green)', border: 'none', color: 'var(--on-accent)', cursor: 'pointer' }}>Copy</button>
       </div>
 
       {/* Tabs */}
-      <div style={{ display: 'flex', background: 'var(--surface)', borderRadius: 10, padding: 3, marginBottom: 18 }}>
+      <div style={{ display: 'flex', gap: 6, marginBottom: 18 }}>
         {(['plan', 'library'] as const).map(t => (
-          <button key={t} onClick={() => setTab(t)} style={{ flex: 1, padding: '8px 0', borderRadius: 8, fontSize: 13, fontWeight: 700, cursor: 'pointer', border: 'none', fontFamily: 'inherit', background: tab === t ? 'var(--bg-header)' : 'transparent', color: tab === t ? 'var(--text-primary)' : 'var(--text-muted)', boxShadow: tab === t ? '0 1px 4px rgba(0,0,0,0.12)' : 'none' }}>
+          <button key={t} onClick={() => setTab(t)} style={{ flex: 1, padding: '12px 0', borderRadius: 999, fontSize: 13, fontWeight: 700, cursor: 'pointer', border: 'none', fontFamily: 'inherit', transition: 'all 0.2s', background: tab === t ? 'var(--green)' : 'var(--surface)', color: tab === t ? 'var(--on-accent)' : 'var(--text-secondary)' }}>
             {t === 'plan' ? 'Week Plan' : 'Meal Library'}
           </button>
         ))}
@@ -305,56 +308,38 @@ export default function FoodPlanner() {
       {tab === 'plan' && (
         <>
           {/* ── Week navigator with calendar picker ── */}
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 18 }}>
-            <button
-              onClick={() => setWeekStart(w => addWeeks(w, -1))}
-              style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 8, color: 'var(--text-secondary)', padding: '6px 14px', cursor: 'pointer', fontSize: 13 }}
-            >&#8592;</button>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 10, marginBottom: 16 }}>
+            <button onClick={() => setWeekStart(w => addWeeks(w, -1))} aria-label="Previous week" style={{ background: 'var(--surface)', border: 'none', borderRadius: '50%', width: 44, height: 44, color: 'var(--text-primary)', cursor: 'pointer', fontSize: 18, flexShrink: 0 }}>&#8592;</button>
 
-            {/* Clickable date range → opens calendar picker */}
-            <div ref={pickerAnchorRef} style={{ position: 'relative', textAlign: 'center' }}>
-              <button
-                onClick={() => setShowPicker(v => !v)}
-                style={{ background: 'transparent', border: 'none', cursor: 'pointer', padding: '4px 8px', borderRadius: 8 }}
-              >
-                <div style={{
-                  fontSize: 14, fontWeight: 700, color: 'var(--text-primary)',
-                  display: 'flex', alignItems: 'center', gap: 6,
-                  borderBottom: showPicker ? '1.5px solid var(--blue)' : '1.5px solid transparent',
-                  paddingBottom: 2, transition: 'border-color 0.2s',
-                }}>
-                  <span style={{ fontSize: 13 }}>&#128197;</span>
+            <div ref={pickerAnchorRef} style={{ position: 'relative', textAlign: 'center', flex: 1 }}>
+              <button onClick={() => setShowPicker(v => !v)} style={{ background: 'var(--surface)', border: 'none', cursor: 'pointer', padding: '8px 18px', borderRadius: 999, color: 'var(--text-primary)', width: '100%' }}>
+                <div className="display" style={{ fontSize: 17, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6 }}>
                   {formatWeekRange(weekStart)}
-                  <span style={{ fontSize: 10, color: 'var(--text-muted)' }}>{showPicker ? '▲' : '▼'}</span>
+                  <span style={{ fontSize: 9, color: 'var(--text-muted)' }}>{showPicker ? '▲' : '▼'}</span>
                 </div>
-                <div style={{ fontSize: 10, color: 'var(--text-muted)', marginTop: 3 }}>
-                  {slots.length} meal{slots.length !== 1 ? 's' : ''} planned · click to jump
-                </div>
+                <div style={{ fontSize: 10, color: 'var(--text-muted)' }}>{slots.length} meal{slots.length !== 1 ? 's' : ''} planned</div>
               </button>
-
               {showPicker && (
-                <WeekPicker
-                  value={weekStart}
-                  onChange={iso => { setWeekStart(iso); setShowPicker(false) }}
-                  onClose={() => setShowPicker(false)}
-                />
+                <WeekPicker value={weekStart} onChange={iso => { setWeekStart(iso); setShowPicker(false) }} onClose={() => setShowPicker(false)} />
               )}
             </div>
 
-            <button
-              onClick={() => setWeekStart(w => addWeeks(w, 1))}
-              style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 8, color: 'var(--text-secondary)', padding: '6px 14px', cursor: 'pointer', fontSize: 13 }}
-            >&#8594;</button>
+            <button onClick={() => setWeekStart(w => addWeeks(w, 1))} aria-label="Next week" style={{ background: 'var(--surface)', border: 'none', borderRadius: '50%', width: 44, height: 44, color: 'var(--text-primary)', cursor: 'pointer', fontSize: 18, flexShrink: 0 }}>&#8594;</button>
           </div>
 
           {(planLoading || libLoading) && <div style={{ textAlign: 'center', padding: '32px 0', color: 'var(--text-muted)', fontSize: 13 }}>Loading...</div>}
-          {(planError || libError) && <div style={{ background: 'rgba(248,113,113,0.08)', border: '1px solid rgba(248,113,113,0.3)', borderRadius: 10, padding: 14, fontSize: 13, color: 'var(--red)', marginBottom: 14 }}>{planError ?? libError}</div>}
+          {(planError || libError) && <div style={{ background: 'rgba(255,107,94,0.1)', borderRadius: 20, padding: 16, fontSize: 13, color: 'var(--red)', marginBottom: 14 }}>{planError ?? libError}</div>}
 
           {!planLoading && !libLoading && !planError && !libError && WEEKDAYS.map(day => (
-            <div key={day} style={{ marginBottom: 20 }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
-                <div style={{ fontSize: 13, fontWeight: 700, color: 'var(--text-secondary)' }}>{day}</div>
-                <div style={{ fontSize: 11, color: 'var(--text-muted)', fontFamily: 'var(--font-mono)' }}>{dayDate(weekStart, day)}</div>
+            <div key={day} style={{ marginBottom: 24 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10, margin: '4px 4px 10px' }}>
+                {(() => { const isT = weekStart === currentMondayISO() && WEEKDAYS[(new Date().getDay() + 6) % 7] === day; return (
+                  <>
+                    <div className="display" style={{ fontSize: 22, lineHeight: 1, color: isT ? 'var(--green)' : 'var(--text-primary)' }}>{day}</div>
+                    <div style={{ fontSize: 11, color: 'var(--text-muted)', fontFamily: 'var(--font-mono)' }}>{dayDate(weekStart, day)}</div>
+                    {isT && <span style={{ fontSize: 9, fontWeight: 800, color: 'var(--on-accent)', background: 'var(--green)', borderRadius: 999, padding: '3px 9px', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Today</span>}
+                  </>
+                ) })()}
                 <div style={{ flex: 1, height: 1, background: 'var(--border)' }} />
               </div>
               {MEAL_TYPES.map(mt => (
@@ -376,7 +361,7 @@ export default function FoodPlanner() {
       {tab === 'library' && (
         <>
           {libLoading && <div style={{ textAlign: 'center', padding: '32px 0', color: 'var(--text-muted)', fontSize: 13 }}>Loading library...</div>}
-          {libError && <div style={{ background: 'rgba(248,113,113,0.08)', border: '1px solid rgba(248,113,113,0.3)', borderRadius: 10, padding: 14, fontSize: 13, color: 'var(--red)', marginBottom: 14 }}>{libError}</div>}
+          {libError && <div style={{ background: 'rgba(255,107,94,0.1)', borderRadius: 20, padding: 16, fontSize: 13, color: 'var(--red)', marginBottom: 14 }}>{libError}</div>}
           {!libLoading && <LibraryPanel library={library} saving={libSaving} onAdd={addMeal} onUpdate={updateMeal} onDelete={deleteMeal} />}
         </>
       )}

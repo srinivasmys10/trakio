@@ -49,7 +49,7 @@ export default function AudioRecorder({ existingUrl, onRecorded, onClear }: Audi
     const W = canvas.width, H = canvas.height
     ctx.clearRect(0, 0, W, H)
     ctx.beginPath()
-    ctx.strokeStyle = '#4ade80'
+    ctx.strokeStyle = '#b9f94f'
     ctx.lineWidth   = 1.5
 
     const step = W / buf.length
@@ -171,7 +171,7 @@ export default function AudioRecorder({ existingUrl, onRecorded, onClear }: Audi
       )}
 
       {state === 'recording' && (
-        <div style={{ background: 'rgba(248,113,113,0.07)', border: '1px solid rgba(248,113,113,0.25)', borderRadius: 10, padding: '10px 12px' }}>
+        <div style={{ background: 'rgba(248,113,113,0.07)', border: '1px solid rgba(248,113,113,0.25)', borderRadius: 22, padding: '10px 12px' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
             <span style={{ width: 8, height: 8, borderRadius: '50%', background: 'var(--red)', animation: 'pulse-dot 1s ease infinite', flexShrink: 0 }} />
             <span style={{ fontSize: 12, fontWeight: 700, color: 'var(--red)' }}>Recording {fmt(elapsed)}</span>
@@ -179,7 +179,7 @@ export default function AudioRecorder({ existingUrl, onRecorded, onClear }: Audi
               ■ Stop
             </button>
           </div>
-          <canvas ref={canvasRef} width={260} height={36} style={{ width: '100%', height: 36, display: 'block', borderRadius: 6, background: 'rgba(74,222,128,0.05)' }} />
+          <canvas ref={canvasRef} width={260} height={36} style={{ width: '100%', height: 36, display: 'block', borderRadius: '50%', background: 'rgba(185,249,79,0.05)' }} />
         </div>
       )}
 

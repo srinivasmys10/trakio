@@ -10,13 +10,13 @@ export type SessionType =
 
 export const SESSION_META: Record<SessionType, { icon: string; color: string; bg: string; border: string; label: string }> = {
   rest:      { icon: '😴', color: 'var(--text-muted)',  bg: 'var(--surface)',             border: 'var(--border)',                label: 'Rest'          },
-  easy:      { icon: '🏃', color: 'var(--blue)',        bg: 'rgba(96,165,250,0.08)',      border: 'rgba(96,165,250,0.3)',         label: 'Easy Run'      },
-  tempo:     { icon: '⚡', color: 'var(--amber)',       bg: 'rgba(245,158,11,0.08)',      border: 'rgba(245,158,11,0.3)',         label: 'Tempo'         },
+  easy:      { icon: '🏃', color: 'var(--blue)',        bg: 'rgba(255,255,255,0.08)',      border: 'rgba(255,255,255,0.3)',         label: 'Easy Run'      },
+  tempo:     { icon: '⚡', color: 'var(--amber)',       bg: 'rgba(255,154,31,0.08)',      border: 'rgba(255,154,31,0.3)',         label: 'Tempo'         },
   intervals: { icon: '🔥', color: 'var(--red)',         bg: 'rgba(248,113,113,0.08)',     border: 'rgba(248,113,113,0.3)',        label: 'Intervals'     },
-  long:      { icon: '🏅', color: 'var(--purple)',      bg: 'rgba(167,139,250,0.08)',     border: 'rgba(167,139,250,0.3)',        label: 'Long Run'      },
-  recovery:  { icon: '🌿', color: 'var(--green)',       bg: 'rgba(74,222,128,0.07)',      border: 'rgba(74,222,128,0.25)',        label: 'Recovery'      },
+  long:      { icon: '🏅', color: 'var(--purple)',      bg: 'rgba(255,154,31,0.08)',     border: 'rgba(255,154,31,0.3)',        label: 'Long Run'      },
+  recovery:  { icon: '🌿', color: 'var(--green)',       bg: 'rgba(185,249,79,0.07)',      border: 'rgba(185,249,79,0.25)',        label: 'Recovery'      },
   cross:     { icon: '🚴', color: 'var(--yellow)',      bg: 'rgba(250,204,21,0.07)',      border: 'rgba(250,204,21,0.3)',         label: 'Cross-Train'   },
-  race:      { icon: '🏁', color: '#f43f5e',            bg: 'rgba(244,63,94,0.1)',        border: 'rgba(244,63,94,0.4)',          label: 'RACE DAY'      },
+  race:      { icon: '🏁', color: '#ff6b5e',            bg: 'rgba(255,107,94,0.1)',        border: 'rgba(255,107,94,0.4)',          label: 'RACE DAY'      },
 }
 
 export interface MarathonSession {

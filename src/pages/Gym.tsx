@@ -34,8 +34,8 @@ export default function Gym({ gymSplits, gymLoading, gymError, onRefetch }: GymP
 
       {gymLoading && (
         <div style={{ textAlign: 'center', padding: '32px 0', color: 'var(--text-muted)', fontSize: 13, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 10 }}>
-          <div style={{ width: 160, height: 3, background: 'var(--surface-hover)', borderRadius: 2, overflow: 'hidden' }}>
-            <div style={{ height: '100%', width: '40%', background: 'var(--blue)', borderRadius: 2, animation: 'loadSlide 1.2s ease infinite' }} />
+          <div style={{ width: 160, height: 3, background: 'var(--surface-hover)', borderRadius: 999, overflow: 'hidden' }}>
+            <div style={{ height: '100%', width: '40%', background: 'var(--blue)', borderRadius: 999, animation: 'loadSlide 1.2s ease infinite' }} />
           </div>
           <style>{"@keyframes loadSlide{0%{transform:translateX(-200%)}100%{transform:translateX(500%)}}"}</style>
           Loading exercises from Supabase…
@@ -43,7 +43,7 @@ export default function Gym({ gymSplits, gymLoading, gymError, onRefetch }: GymP
       )}
 
       {gymError && (
-        <div style={{ background: 'rgba(248,113,113,0.08)', border: '1px solid rgba(248,113,113,0.3)', borderRadius: 10, padding: 14, fontSize: 13, color: 'var(--red)', marginBottom: 16, display: 'flex', gap: 8, alignItems: 'flex-start' }}>
+        <div style={{ background: 'rgba(248,113,113,0.08)', border: '1px solid rgba(248,113,113,0.3)', borderRadius: 22, padding: 14, fontSize: 13, color: 'var(--red)', marginBottom: 16, display: 'flex', gap: 8, alignItems: 'flex-start' }}>
           <span>⚠</span>
           <div><strong>Failed to load exercises from Supabase.</strong><br /><span style={{ fontSize: 11, opacity: 0.7 }}>{gymError}</span></div>
         </div>
@@ -58,7 +58,7 @@ export default function Gym({ gymSplits, gymLoading, gymError, onRefetch }: GymP
             const split      = gymSplits[name]
             const isExpanded = expanded === name
             return (
-              <div key={name} style={{ background: 'var(--surface)', border: `1px solid ${isExpanded ? 'rgba(96,165,250,0.4)' : 'var(--border)'}`, borderRadius: 12, marginBottom: 8, overflow: 'hidden', transition: 'border-color 0.2s' }}>
+              <div key={name} style={{ background: 'var(--surface)', border: `1px solid ${isExpanded ? 'rgba(255,255,255,0.4)' : 'var(--border)'}`, borderRadius: 22, marginBottom: 8, overflow: 'hidden', transition: 'border-color 0.2s' }}>
                 <div onClick={() => setExpanded(isExpanded ? null : name)} role="button" tabIndex={0} onKeyDown={(e) => e.key === 'Enter' && setExpanded(isExpanded ? null : name)} style={{ padding: '13px 16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer', userSelect: 'none', outline: 'none' }}>
                   <div>
                     <div style={{ fontSize: 14, fontWeight: 700, marginBottom: 3 }}>{name}</div>

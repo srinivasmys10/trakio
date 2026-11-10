@@ -150,9 +150,9 @@ export default function WeekPicker({ value, onChange, onClose }: WeekPickerProps
         left: '50%',
         transform: 'translateX(-50%)',
         zIndex: 300,
-        background: 'var(--bg-header)',
-        border: '1px solid var(--border)',
-        borderRadius: 14,
+        background: 'var(--bg-dropdown)',
+        border: '1px solid var(--border-input)',
+        borderRadius: 24,
         boxShadow: 'var(--shadow)',
         padding: '16px',
         width: 308,
@@ -163,7 +163,7 @@ export default function WeekPicker({ value, onChange, onClose }: WeekPickerProps
       <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 14 }}>
         <button
           onClick={prevMonth}
-          style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 8, color: 'var(--text-secondary)', width: 32, height: 32, cursor: 'pointer', fontSize: 18, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}
+          style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: '50%', color: 'var(--text-primary)', width: 34, height: 34, cursor: 'pointer', fontSize: 18, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}
         >
           ‹
         </button>
@@ -172,14 +172,14 @@ export default function WeekPicker({ value, onChange, onClose }: WeekPickerProps
           <select
             value={viewMonth}
             onChange={e => setViewMonth(Number(e.target.value))}
-            style={{ background: 'var(--bg-input)', border: '1px solid var(--border-input)', borderRadius: 7, color: 'var(--text-primary)', fontSize: 13, fontWeight: 700, padding: '4px 6px', cursor: 'pointer', fontFamily: 'inherit', outline: 'none' }}
+            style={{ background: 'var(--bg-input)', border: '1px solid var(--border-input)', borderRadius: 999, color: 'var(--text-primary)', fontSize: 13, fontWeight: 700, padding: '6px 10px', cursor: 'pointer', fontFamily: 'inherit', outline: 'none' }}
           >
             {MONTHS.map((m, i) => <option key={i} value={i}>{m}</option>)}
           </select>
           <select
             value={viewYear}
             onChange={e => setViewYear(Number(e.target.value))}
-            style={{ background: 'var(--bg-input)', border: '1px solid var(--border-input)', borderRadius: 7, color: 'var(--text-primary)', fontSize: 13, fontWeight: 700, padding: '4px 6px', cursor: 'pointer', fontFamily: 'inherit', outline: 'none' }}
+            style={{ background: 'var(--bg-input)', border: '1px solid var(--border-input)', borderRadius: 999, color: 'var(--text-primary)', fontSize: 13, fontWeight: 700, padding: '6px 10px', cursor: 'pointer', fontFamily: 'inherit', outline: 'none' }}
           >
             {Array.from({ length: 6 }, (_, i) => new Date().getFullYear() - 1 + i).map(y => (
               <option key={y} value={y}>{y}</option>
@@ -189,7 +189,7 @@ export default function WeekPicker({ value, onChange, onClose }: WeekPickerProps
 
         <button
           onClick={nextMonth}
-          style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 8, color: 'var(--text-secondary)', width: 32, height: 32, cursor: 'pointer', fontSize: 18, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}
+          style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: '50%', color: 'var(--text-primary)', width: 34, height: 34, cursor: 'pointer', fontSize: 18, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}
         >
           ›
         </button>
@@ -219,14 +219,14 @@ export default function WeekPicker({ value, onChange, onClose }: WeekPickerProps
             style={{
               display: 'grid',
               gridTemplateColumns: 'repeat(7,1fr)',
-              borderRadius: 8,
+              borderRadius: 999,
               cursor: mon ? 'pointer' : 'default',
               background: selected
-                ? 'rgba(74,222,128,0.15)'
+                ? 'rgba(185,249,79,0.15)'
                 : hovering
                 ? 'var(--surface-hover)'
                 : 'transparent',
-              border: `1.5px solid ${selected ? 'rgba(74,222,128,0.4)' : 'transparent'}`,
+              border: `1.5px solid ${selected ? 'rgba(185,249,79,0.4)' : 'transparent'}`,
               transition: 'background 0.12s',
               marginBottom: 2,
             }}
@@ -284,13 +284,13 @@ export default function WeekPicker({ value, onChange, onClose }: WeekPickerProps
         </div>
         <button
           onClick={goToday}
-          style={{ padding: '6px 12px', borderRadius: 8, fontSize: 12, fontWeight: 700, background: 'rgba(74,222,128,0.1)', border: '1px solid rgba(74,222,128,0.3)', color: 'var(--green)', cursor: 'pointer', flexShrink: 0 }}
+          style={{ padding: '8px 16px', borderRadius: 999, fontSize: 12, fontWeight: 700, background: 'var(--green)', border: 'none', color: 'var(--on-accent)', cursor: 'pointer', flexShrink: 0 }}
         >
           Today
         </button>
         <button
           onClick={onClose}
-          style={{ padding: '6px 12px', borderRadius: 8, fontSize: 12, fontWeight: 600, background: 'var(--surface)', border: '1px solid var(--border)', color: 'var(--text-muted)', cursor: 'pointer', flexShrink: 0 }}
+          style={{ padding: '8px 16px', borderRadius: 999, fontSize: 12, fontWeight: 600, background: 'var(--bg-input)', border: '1px solid var(--border)', color: 'var(--text-muted)', cursor: 'pointer', flexShrink: 0 }}
         >
           ✕
         </button>

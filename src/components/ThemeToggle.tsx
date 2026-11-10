@@ -12,11 +12,11 @@ export default function ThemeToggle({ theme, onToggle }: ThemeToggleProps) {
       title={`Switch to ${theme === 'dark' ? 'light' : 'dark'} mode`}
       aria-label="Toggle theme"
       style={{
-        background:   theme === 'dark' ? 'var(--surface-hover)' : 'rgba(0,0,0,0.06)',
-        border:       `1px solid ${theme === 'dark' ? 'var(--border-input)' : 'rgba(0,0,0,0.1)'}`,
-        borderRadius: 20,
-        width:        36,
-        height:       36,
+        background:   'var(--surface)',
+        border:       '1px solid var(--border)',
+        borderRadius: 999,
+        width:        42,
+        height:       42,
         display:      'flex',
         alignItems:   'center',
         justifyContent: 'center',

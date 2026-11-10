@@ -9,11 +9,11 @@ export default function CheckBox({ checked, onChange }: CheckBoxProps) {
       tabIndex={0}
       onKeyDown={(e) => e.key === 'Enter' && onChange()}
       style={{
-        width: 22,
-        height: 22,
+        width: 28,
+        height: 28,
         border: `2px solid ${checked ? 'var(--green)' : 'var(--checkbox-off)'}`,
-        borderRadius: 6,
-        background: checked ? 'rgba(74,222,128,0.2)' : 'transparent',
+        borderRadius: '50%',
+        background: checked ? 'var(--green)' : 'transparent',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
@@ -24,7 +24,7 @@ export default function CheckBox({ checked, onChange }: CheckBoxProps) {
       }}
     >
       {checked && (
-        <span style={{ color: 'var(--green)', fontSize: 13, fontWeight: 700, lineHeight: 1 }}>✓</span>
+        <span style={{ color: 'var(--on-accent)', fontSize: 14, fontWeight: 800, lineHeight: 1 }}>✓</span>
       )}
     </div>
   )
